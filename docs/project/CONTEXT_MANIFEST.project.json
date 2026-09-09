@@ -1,0 +1,26 @@
+{
+  "project": "moonray-blender-bridge",
+  "current_phase": "02",
+  "hints": {
+    "02": [
+      "docs/runbooks/PHASE02_HOST_SETUP.md",
+      "docs/research/02-host-runtime-baseline.md",
+      "docs/decisions/ADR-0001-wsl2-linux-host-boundary.md",
+      "docs/decisions/ADR-0002-direct-moonray-bridge-primary.md"
+    ],
+    "03": [
+      "docs/research/03-direct-bridge-feasibility.md",
+      "docs/project/ARCHITECTURE.md"
+    ],
+    "04": [
+      "docs/research/03-direct-bridge-feasibility.md",
+      "docs/design/DIRECT_BRIDGE_TARGET.md",
+      "docs/decisions/ADR-0002-direct-moonray-bridge-primary.md"
+    ],
+    "05": [
+      "docs/design/DIRECT_BRIDGE_TARGET.md",
+      "docs/project/ARCHITECTURE.md"
+    ]
+  },
+  "note": "Routing hint only. When copied into an official Progressive Context Runtime, preserve the Runtime schema if it differs."
+}

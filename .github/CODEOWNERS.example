@@ -1,0 +1,6 @@
+# Rename this file to CODEOWNERS after replacing the placeholder.
+* @YOUR_GITHUB_USERNAME
+
+/.github/ @YOUR_GITHUB_USERNAME
+/docs/project/ @YOUR_GITHUB_USERNAME
+/docs/decisions/ @YOUR_GITHUB_USERNAME

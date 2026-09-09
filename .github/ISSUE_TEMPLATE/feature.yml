@@ -1,0 +1,40 @@
+name: Feature request
+description: Propose a focused capability or improvement.
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes: {label: Problem / workflow need}
+    validations: {required: true}
+  - type: textarea
+    id: proposal
+    attributes: {label: Proposed behavior}
+    validations: {required: true}
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Blender RenderEngine / UI
+        - Direct Bridge / IPC
+        - Scene translation
+        - Materials / textures
+        - Viewport
+        - Final render / AOV / EXR
+        - Performance
+        - Packaging / setup
+        - Hydra reference experiment
+        - Documentation
+        - Other
+    validations: {required: true}
+  - type: textarea
+    id: alternatives
+    attributes: {label: Alternatives / tradeoffs considered}
+  - type: checkboxes
+    id: architecture
+    attributes:
+      label: Architecture check
+      options:
+        - label: This request does not make Hydra/hdMoonray a required production dependency.
+          required: true

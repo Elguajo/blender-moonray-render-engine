@@ -1,0 +1,5 @@
+Read `AGENTS.md` and `AGENT_HANDOFF.md`, then resume from the single `[>]` phase in `docs/project/ROADMAP.md`.
+
+Do not redesign the roadmap or revert to Hydra-first architecture. Direct MoonRay Bridge is primary per ADR-0002; Hydra is reference/fallback/benchmark only.
+
+Execute only the current approved phase. Verify with real evidence, persist the Completion Record, update Roadmap/NEXT_SESSION, then STOP and ask me in Russian before starting the next phase.

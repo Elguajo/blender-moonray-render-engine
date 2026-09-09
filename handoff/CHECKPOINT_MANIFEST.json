@@ -1,0 +1,13 @@
+{
+  "project": "moonray-blender-bridge",
+  "checkpoint": "direct-bridge-final-starter",
+  "date": "2026-09-09",
+  "architecture": "Blender RenderEngine <-> out-of-process Direct MoonRay Bridge <-> MoonRay",
+  "hydra_role": "reference/fallback/benchmark only",
+  "current_phase": "02-host-runtime-foundation",
+  "completed_phases": [
+    "00",
+    "01"
+  ],
+  "planned_final_phase": "12"
+}

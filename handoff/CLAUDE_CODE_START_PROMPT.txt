@@ -1,0 +1,5 @@
+Read `CLAUDE.md` and `AGENT_HANDOFF.md`, then resume from the single `[>]` phase in `docs/project/ROADMAP.md`.
+
+Direct MoonRay Bridge is the primary architecture per ADR-0002. Hydra/hdMoonray is reference/fallback/benchmark only. Do not change this without an explicit user decision.
+
+Execute only the current approved phase. Use observed evidence, update completion/project state, then STOP and ask me in Russian before starting the next phase.

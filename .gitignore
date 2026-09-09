@@ -1,0 +1,65 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Build/runtime trees
+build/
+dist/
+cache/
+tmp/
+install/
+_downloads/
+artifacts/
+
+# Blender
+*.blend1
+*.blend2
+*.blend@
+
+# Render outputs / large generated data
+renders/
+output/
+*.exr
+*.mov
+*.mp4
+
+# Local logs/evidence that may contain machine paths
+*.log
+local-evidence/
+
+# Secrets/environment
+.env
+.env.*
+!.env.example
+
+# WSL / local runtime images
+*.wsl
+*.vhdx
+
+# Progressive runtime generated caches (keep canonical state/docs tracked)
+.progressive/cache/
+
+# Native build/runtime artifacts
+build/
+out/
+install/
+.cache/
+*.o
+*.so
+*.a
+*.dylib
+*.dll
+*.pdb
+*.blend1
+*.exr
+*.rdla
+*.rdlb

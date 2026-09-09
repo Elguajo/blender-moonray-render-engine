@@ -1,0 +1,377 @@
+{
+  "project": "moonray-blender-bridge",
+  "date": "2026-09-09",
+  "file_count": 74,
+  "files": [
+    {
+      "path": ".editorconfig",
+      "size": 319,
+      "sha256": "c64a87234c749489d68d6a792a3088a138df354496ec16a382c516e131972776"
+    },
+    {
+      "path": ".gitattributes",
+      "size": 220,
+      "sha256": "1c10f5493b3fa98731b63533621679c144bff83edf8bf97663e73f6abe83696c"
+    },
+    {
+      "path": ".github/CODEOWNERS.example",
+      "size": 199,
+      "sha256": "a012cd7c86cae8fcb0410ebad042e0d4d4e23ea21bc7424d8d1ef07db9d109ae"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug.yml",
+      "size": 1513,
+      "sha256": "a0131c480c42045389a2d3b425d23aac0bd7c05afa1aa32137c13421cb691121"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/compatibility.yml",
+      "size": 2025,
+      "sha256": "34c3085fd041cfb9b086bbc5cbfb6714b1ca982034e5ed06f5db46f116b6ef97"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "size": 28,
+      "sha256": "1f103c6a9dd07cd13a9a6f17ace6b813f47747eb9cb7e00488cb2073caaf91bb"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/docs.yml",
+      "size": 552,
+      "sha256": "2fa2d2f33b51e72ab98d1e19a3c5ac65148e12da084eaaadbab4d2c642b02c47"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature.yml",
+      "size": 1124,
+      "sha256": "7fe297e2909aecfbf7a589a505296576e74b3044e21337810526742448fb074e"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/performance.yml",
+      "size": 1320,
+      "sha256": "8651e97f714fd72cc55e97a6cfebe3fbb610a01a55b17706ca279c87a5532317"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "size": 171,
+      "sha256": "0786144eafa3d02ed1999e65eaca800e67ac1d192c08c3235de0acdd35aeb81f"
+    },
+    {
+      "path": ".github/pull_request_template.md",
+      "size": 1002,
+      "sha256": "45195f8f6350a6faa9a7de205762f0a2f5965d77a5c4153eb49d644376451a7c"
+    },
+    {
+      "path": ".github/release.yml",
+      "size": 406,
+      "sha256": "1947e4f90540226fe101eb67c636ab611b2f965d47526494bac6105c32917d07"
+    },
+    {
+      "path": ".github/workflows/repo-health.yml",
+      "size": 740,
+      "sha256": "a59868555328702b5e6c97110ac3496a6016f970a521ee59b9b955de78383c09"
+    },
+    {
+      "path": ".gitignore",
+      "size": 686,
+      "sha256": "0f768bfa5a73b24df692da4fde061d08bc4a026d106e8fe210ba4b0234df87d9"
+    },
+    {
+      "path": "AGENTS.md",
+      "size": 1701,
+      "sha256": "19317a548d56204f5b09a147afeec9a9ae110645c6ecd03ccf416107247f0e8d"
+    },
+    {
+      "path": "AGENT_HANDOFF.md",
+      "size": 1544,
+      "sha256": "f2b4f175d9527ba35315e4208353ba918b290cd6f30347ad93faface3f72bedf"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "size": 495,
+      "sha256": "09808745e439d22e26933706c610ed7e756d61b6a49da695d5d17a0e2afb3a6e"
+    },
+    {
+      "path": "CLAUDE.md",
+      "size": 486,
+      "sha256": "7b8eee1cab6925cc5f58fe7f89be85a56cd0929c2101b8a0b6c14f77e112a730"
+    },
+    {
+      "path": "CODEX_HANDOFF.md",
+      "size": 63,
+      "sha256": "43111c02e87b2d49fbe7915b12f1d2a4ec21d8be3b605bd2b4d194d380096c76"
+    },
+    {
+      "path": "CODE_OF_CONDUCT.md",
+      "size": 907,
+      "sha256": "e92943fa6b2d8504bae563965d450ba94796520fbaa28675b4d3a897787887c4"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "size": 2263,
+      "sha256": "c476f30f525fef5a0b18dc3cad55ef9b5efb6f10cf1aacd12753215305c40829"
+    },
+    {
+      "path": "GOVERNANCE.md",
+      "size": 924,
+      "sha256": "d1f0cdeb4696b71329e07ca4389f60d694067511b46c71d5ec75cdbf1bc51db9"
+    },
+    {
+      "path": "LICENSE",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "NOTICE.md",
+      "size": 720,
+      "sha256": "cc5c86228ef85aa9285d2e094c9cb8d6e6092322a14e262b8903b8a57c6ce79a"
+    },
+    {
+      "path": "README.md",
+      "size": 7142,
+      "sha256": "d348953970d07559ef380e4b6dfdd8970960fee5080567240d8de887b8003371"
+    },
+    {
+      "path": "REPO_STARTER_NOTES.md",
+      "size": 608,
+      "sha256": "544a2282baa49f14bdd537b4f7a8532d4207649af679f6227875be89b2088032"
+    },
+    {
+      "path": "SECURITY.md",
+      "size": 1157,
+      "sha256": "aac705c35f0bc974ae1b01af00ee12fd1bd61813610e549a317d3bbd78982415"
+    },
+    {
+      "path": "SUPPORT.md",
+      "size": 820,
+      "sha256": "84988ab6d8c748ccbff714edfdb42f7f7cae8ced294963b9c139d10b7e4c2780"
+    },
+    {
+      "path": "addon/README.md",
+      "size": 406,
+      "sha256": "5e0d535927ac63bbe9b0c9b971c700becf70635960828cabf4679aaa64bbfaad"
+    },
+    {
+      "path": "bridge/README.md",
+      "size": 392,
+      "sha256": "bba759d1b0523f61fdab103ed34855130407945be260e619bffaa17ebfbeb641"
+    },
+    {
+      "path": "docs/REPOSITORY_STRUCTURE.md",
+      "size": 1370,
+      "sha256": "ab887c8197bb68775b34b9385fe9495a12ce20857d72fefe0555d24ae1ea8532"
+    },
+    {
+      "path": "docs/completions/00-scope-and-baseline.md",
+      "size": 1231,
+      "sha256": "f8d81dc586a6a9ef4a9a893aac24fa8c8f7779779abce3a1706adfc454ea6adf"
+    },
+    {
+      "path": "docs/completions/01-compatibility-and-host-architecture.md",
+      "size": 4875,
+      "sha256": "0865e8c6de4005dea2c6728886a4e49e8f6c85f27e5e39a9ebcd177b87c2686a"
+    },
+    {
+      "path": "docs/decisions/ADR-0001-wsl2-linux-host-boundary.md",
+      "size": 1141,
+      "sha256": "acb79c30e7eef99ec9dd4379d34a442cd8edbd6cf5816b3db69eb45010a40d2f"
+    },
+    {
+      "path": "docs/decisions/ADR-0002-direct-moonray-bridge-primary.md",
+      "size": 3385,
+      "sha256": "5ee0d666488dddb028076458fdb5c58ddbc734f4d9748f30f4257c2c55377e47"
+    },
+    {
+      "path": "docs/decisions/README.md",
+      "size": 512,
+      "sha256": "cd2b944ccf7340e1e1fdfcbb51aec70a0ac46bca12514943b79fa14cc67347b8"
+    },
+    {
+      "path": "docs/design/DIRECT_BRIDGE_TARGET.md",
+      "size": 1476,
+      "sha256": "987f9e06878b0ef572cb3c140033d2a3a96fd79f8a926fd536e30ff1ddeab7e0"
+    },
+    {
+      "path": "docs/evidence/phase02-host-evidence.template.md",
+      "size": 840,
+      "sha256": "138e8a5a30d3740f927df495b4fefb3a7bfc93c4caa33f3d6a68b5e1e7e6cad4"
+    },
+    {
+      "path": "docs/maintainers/REPOSITORY_SETUP.md",
+      "size": 1692,
+      "sha256": "cb54abe62070de3da63df88fcb90fd63f9e8a42cba40d18afea03a286ab00b0f"
+    },
+    {
+      "path": "docs/phases/00-scope-and-baseline.md",
+      "size": 1684,
+      "sha256": "5b80eefd1ba52da44c47a418358d2e5daa4a8c313edee707d67def2cbae2762c"
+    },
+    {
+      "path": "docs/phases/01-compatibility-and-host-architecture.md",
+      "size": 4887,
+      "sha256": "1b4cf7b5bf149b03f53e5e5ee8da69e6c958cd09caf8e5fafc7c82bf611a1629"
+    },
+    {
+      "path": "docs/phases/02-host-runtime-foundation.md",
+      "size": 4711,
+      "sha256": "834f80b59a40207b0a086c2ab291455145857680d946648ce7de684131c69aa9"
+    },
+    {
+      "path": "docs/phases/03-moonray-native-runtime.md",
+      "size": 1567,
+      "sha256": "2d516879a03d2f60fa7281eebf4362b50a29568b63cae79f13628c667cad3bcc"
+    },
+    {
+      "path": "docs/phases/04-direct-bridge-prototype.md",
+      "size": 1949,
+      "sha256": "042d2ce2c7cf4f9b251969286bde1c61a87157f6e910f5321169fda57c2b9b98"
+    },
+    {
+      "path": "docs/phases/05-blender-renderengine-integration.md",
+      "size": 1609,
+      "sha256": "04f34d399ab6acbc53ff66496eea09521823984aef8dbdd9855f99b087d3826a"
+    },
+    {
+      "path": "docs/phases/06-geometry-camera-lights.md",
+      "size": 1531,
+      "sha256": "3815d0cb679c2ca685a6846da61699ddcc7c287ffcc687628485d9f2f1c9bfb0"
+    },
+    {
+      "path": "docs/phases/07-materials-textures-instances.md",
+      "size": 1552,
+      "sha256": "9cf1af6599c77c3f791804013e44d16ad0c8787745452d12924bf193ce4bffbe"
+    },
+    {
+      "path": "docs/phases/08-interactive-viewport.md",
+      "size": 1482,
+      "sha256": "0fc5f8a81df1267ad56ce8cef265271295b40a807e89f31fe87a66a6c4d39c76"
+    },
+    {
+      "path": "docs/phases/09-final-render-aovs-animation.md",
+      "size": 1408,
+      "sha256": "d1642fbb5385234f7fe83a04d19a8c6c21e2ddc376278532abdbca4d66d6db23"
+    },
+    {
+      "path": "docs/phases/10-incremental-performance.md",
+      "size": 1685,
+      "sha256": "e89adf55b3b59607baf6e8ba3869cdadd3581562a1ae8a21d928f1b2bac2987b"
+    },
+    {
+      "path": "docs/phases/11-stability-packaging.md",
+      "size": 1419,
+      "sha256": "656245101de301df9e77645fa3938e2440f4c34259a8d825014459d8e4b717b6"
+    },
+    {
+      "path": "docs/phases/12-final-acceptance.md",
+      "size": 1488,
+      "sha256": "35546f7a01e7cc26e2b72dfa2dc8977cdeccc4afcdd2c760d32d2fd3ea136e73"
+    },
+    {
+      "path": "docs/project/ARCHITECTURE.md",
+      "size": 7110,
+      "sha256": "776bd0b26ec8fbaa96add15f1972ec196c575cca3e864339b90dbc653ca8a1a8"
+    },
+    {
+      "path": "docs/project/CONTEXT_MANIFEST.project.json",
+      "size": 854,
+      "sha256": "5145eced1c0aa7647041d70e18638f64d65eedfa78b3d004c61e0dc80d75b38d"
+    },
+    {
+      "path": "docs/project/NEXT_SESSION.md",
+      "size": 3206,
+      "sha256": "cfeec892519ae767cff7f1ee783c113b85cbac7a7baaa2ddc814b5f8a8334ead"
+    },
+    {
+      "path": "docs/project/PROJECT_BRIEF.md",
+      "size": 5603,
+      "sha256": "854a7795aa352093321564f5bd26fe3704fefec1d0a12e9a383064789c0df832"
+    },
+    {
+      "path": "docs/project/ROADMAP.md",
+      "size": 2143,
+      "sha256": "dc06ad4c9855d8b39651d979e7248136444e840a2ce624c6af125a3318625857"
+    },
+    {
+      "path": "docs/research/01-compatibility-matrix.md",
+      "size": 13233,
+      "sha256": "44c31b74f311239e5dc5355e1bebd874d625a7ac914e627be421a59c75b59eba"
+    },
+    {
+      "path": "docs/research/02-host-runtime-baseline.md",
+      "size": 2315,
+      "sha256": "5e2ba17441692fdb56f9265b6737d13a1df845816d3de4939a41fd96a6709ddd"
+    },
+    {
+      "path": "docs/research/03-direct-bridge-feasibility.md",
+      "size": 2091,
+      "sha256": "654f63e9be85d5fd170e76e4d25e191290ef6527f8b8cde5f755d66b6466f5b9"
+    },
+    {
+      "path": "docs/research/README.md",
+      "size": 513,
+      "sha256": "20db07d0fc19d9b3ad66a9001602342fcd53cf48cc0a692868ed41d3beaeaa7f"
+    },
+    {
+      "path": "docs/runbooks/PHASE02_HOST_SETUP.md",
+      "size": 2874,
+      "sha256": "5ab8cd387e548fcd09fed9f6c33802da9f8e6d9019211acc8b0083f39af142df"
+    },
+    {
+      "path": "experiments/hydra/README.md",
+      "size": 540,
+      "sha256": "eab8cae4e7893eb14365e750ae8510659cd347f9224966bc2882d0bbb4e4ba1f"
+    },
+    {
+      "path": "handoff/CHECKPOINT_MANIFEST.json",
+      "size": 389,
+      "sha256": "c7ed4205ea15aefdd4132569ef1aa474206dc69449ee704737fb4993a3acb45c"
+    },
+    {
+      "path": "handoff/CHECKPOINT_MANIFEST.md",
+      "size": 306,
+      "sha256": "f6a50e7c09236b49b6029bca23f2a234e397a905e86226d2a05c35302261bd4b"
+    },
+    {
+      "path": "handoff/CLAUDE_CODE_START_PROMPT.txt",
+      "size": 446,
+      "sha256": "2655ff3dc03dd223c777123f0794e17df38b1f1377737a605352ff3175a8268a"
+    },
+    {
+      "path": "handoff/CODEX_START_PROMPT.txt",
+      "size": 463,
+      "sha256": "3fb11863608200f33f9f1f41b9b73c6665904070e40496a32ad6beabb7dd6c95"
+    },
+    {
+      "path": "handoff/PROGRESSIVE_CONTEXT_RUNTIME_SETUP.md",
+      "size": 1410,
+      "sha256": "d04a4d5d59eaffaad30de9637a77277f39de265e35edb38a369dae1944f00518"
+    },
+    {
+      "path": "scripts/bootstrap_progressive_runtime.py",
+      "size": 1515,
+      "sha256": "b07dfa3c3571105a6554cc45b768581ced5f62cd73ad610af2943211a903e4ef"
+    },
+    {
+      "path": "scripts/github/create_labels.sh",
+      "size": 1267,
+      "sha256": "a3d3169388153e1a8b479c4eebab44ee74dffe2a82998629837eb5f45c32206f"
+    },
+    {
+      "path": "scripts/linux/phase02_setup_host.sh",
+      "size": 3256,
+      "sha256": "ec129eeb9e6fda03bfca2626c831dfa5274926055e4012463a58b3898a7543c2"
+    },
+    {
+      "path": "scripts/linux/phase02_verify_host.sh",
+      "size": 3948,
+      "sha256": "50d256edafcaa592371364bf954511aaa8df5fb1257da6eb2ba66fd3b0fdbf08"
+    },
+    {
+      "path": "scripts/validate_repo.py",
+      "size": 1803,
+      "sha256": "37978aaee2d8663e6c2871a0e869d85aad27260730353ef803b803bc4c51f351"
+    },
+    {
+      "path": "scripts/windows/phase02_setup_wsl_rocky.ps1",
+      "size": 4550,
+      "sha256": "bea9097bd8604250a357f4c790f416ccff493307144316cdfdd2c423a82cb2ab"
+    }
+  ]
+}

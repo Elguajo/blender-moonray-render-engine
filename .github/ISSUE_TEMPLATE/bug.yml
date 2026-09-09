@@ -1,0 +1,51 @@
+name: Bug report
+description: Report a reproducible failure in the Direct Bridge, Blender add-on, build/runtime or supported workflow.
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please include exact Blender, Bridge, MoonRay and platform identities. Observed logs are more useful than assumptions.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Blender add-on / RenderEngine
+        - Direct Bridge / IPC
+        - MoonRay runtime/build
+        - Scene translation
+        - Materials/textures
+        - Rendered Viewport
+        - F12 / AOV / EXR
+        - Packaging/setup
+        - Hydra reference experiment
+        - Other
+    validations: {required: true}
+  - type: textarea
+    id: versions
+    attributes:
+      label: Environment
+      placeholder: |
+        Blender version/build:
+        Bridge commit/version:
+        MoonRay tag/commit:
+        Windows/WSL/Linux:
+        CPU/GPU/RAM:
+    validations: {required: true}
+  - type: textarea
+    id: steps
+    attributes: {label: Steps to reproduce}
+    validations: {required: true}
+  - type: textarea
+    id: expected
+    attributes: {label: Expected behavior}
+    validations: {required: true}
+  - type: textarea
+    id: actual
+    attributes: {label: Actual behavior}
+    validations: {required: true}
+  - type: textarea
+    id: logs
+    attributes: {label: Logs / crash output, description: "Remove secrets and private data."}

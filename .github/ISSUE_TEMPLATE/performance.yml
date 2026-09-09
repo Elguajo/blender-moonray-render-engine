@@ -1,0 +1,35 @@
+name: Performance report
+description: Report a reproducible bridge/render/update performance result.
+title: "[Performance]: "
+labels: ["performance", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Performance reports require a reproducible scene/methodology. Separate scene translation, transport, MoonRay render and display timing when possible.
+  - type: input
+    id: builds
+    attributes: {label: Blender / Bridge / MoonRay versions}
+    validations: {required: true}
+  - type: input
+    id: hardware
+    attributes: {label: CPU / GPU / RAM / OS / WSL}
+    validations: {required: true}
+  - type: textarea
+    id: scene
+    attributes: {label: Scene / fixture description and settings}
+    validations: {required: true}
+  - type: textarea
+    id: method
+    attributes: {label: Benchmark methodology, placeholder: "warmup, runs, resolution, samples, edits performed..."}
+    validations: {required: true}
+  - type: textarea
+    id: results
+    attributes: {label: Measured results}
+    validations: {required: true}
+  - type: textarea
+    id: comparison
+    attributes: {label: Comparison baseline (optional), description: "If comparing Hydra, make scene/settings/backend conditions explicit."}
+  - type: textarea
+    id: evidence
+    attributes: {label: Profiler/log/raw evidence}

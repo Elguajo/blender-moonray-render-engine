@@ -1,0 +1,62 @@
+name: Compatibility report
+description: Report an exact Blender / Direct Bridge / MoonRay / platform combination.
+title: "[Compatibility]: "
+labels: ["compatibility", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Compatibility claims must be based on an observed run. Please provide exact component identities.
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result
+      options: [PASS, PARTIAL, FAIL]
+    validations: {required: true}
+  - type: input
+    id: blender
+    attributes: {label: Blender version/build, placeholder: "5.2.1 LTS ..."}
+    validations: {required: true}
+  - type: input
+    id: bridge
+    attributes: {label: Bridge commit/version, placeholder: "commit SHA or release"}
+    validations: {required: true}
+  - type: input
+    id: moonray
+    attributes: {label: MoonRay version/commit}
+    validations: {required: true}
+  - type: input
+    id: platform
+    attributes: {label: OS / WSL / Linux release, placeholder: "Windows 11; WSL ...; Rocky ..."}
+    validations: {required: true}
+  - type: input
+    id: hardware
+    attributes: {label: CPU / GPU / RAM}
+    validations: {required: true}
+  - type: checkboxes
+    id: tested
+    attributes:
+      label: Tested capabilities
+      options:
+        - {label: Bridge startup/version handshake}
+        - {label: F12 final render}
+        - {label: Geometry / transforms}
+        - {label: Camera}
+        - {label: Lights}
+        - {label: Materials / textures}
+        - {label: Instances}
+        - {label: Rendered Viewport}
+        - {label: Animation}
+        - {label: AOV / EXR}
+        - {label: Bridge recovery}
+        - {label: XPU}
+  - type: textarea
+    id: steps
+    attributes: {label: Reproduction / validation steps}
+    validations: {required: true}
+  - type: textarea
+    id: evidence
+    attributes: {label: Logs / evidence / screenshots, description: "Remove secrets/private paths where appropriate."}
+  - type: textarea
+    id: notes
+    attributes: {label: Notes / limitations}
