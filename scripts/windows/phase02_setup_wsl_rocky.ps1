@@ -26,7 +26,7 @@ function Invoke-Wsl {
     # first-boot chatter (e.g. "Failed to get unit file state for
     # cloud-init.service") into a terminating error even on exit code 0.
     # Run wsl.exe with the preference relaxed and judge it by $LASTEXITCODE.
-    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$WslArgs)
+    param([Parameter(Mandatory = $true)][string[]]$WslArgs)
     $previous = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
@@ -51,7 +51,7 @@ $IsAdmin = Test-Administrator
 # have to touch the WSL platform itself.
 $WslHealthy = $false
 try {
-    $wslVersionText = Invoke-Wsl --version
+    $wslVersionText = Invoke-Wsl @('--version')
     if ($script:WslExitCode -eq 0 -and $wslVersionText.Trim()) { $WslHealthy = $true }
 } catch {
     $WslHealthy = $false
@@ -85,23 +85,23 @@ if (Get-Command nvidia-smi.exe -ErrorAction SilentlyContinue) {
 Write-Step "Ensure current WSL"
 if (-not $WslHealthy) {
     Write-Host "WSL is not available yet. Installing WSL without a default Ubuntu distro..."
-    Invoke-Wsl --install --no-distribution | Write-Host
+    Invoke-Wsl @('--install','--no-distribution') | Write-Host
     Write-Warning "WSL was installed. If Windows requests a restart, reboot and re-run this script."
 }
 
-Invoke-Wsl --version | Tee-Object -FilePath $log -Append | Write-Host
+Invoke-Wsl @('--version') | Tee-Object -FilePath $log -Append | Write-Host
 
 if ($IsAdmin) {
-    Invoke-Wsl --update | Write-Host
-    Invoke-Wsl --set-default-version 2 | Write-Host
+    Invoke-Wsl @('--update') | Write-Host
+    Invoke-Wsl @('--set-default-version','2') | Write-Host
 } else {
     "Skipped 'wsl --update' / '--set-default-version' (not elevated); WSL already reports a healthy version." |
         Tee-Object -FilePath $log -Append | Write-Host
 }
 
 "`n--- WSL status before Rocky install ---" | Tee-Object -FilePath $log -Append | Write-Host
-Invoke-Wsl --status | Tee-Object -FilePath $log -Append | Write-Host
-Invoke-Wsl --list --verbose | Tee-Object -FilePath $log -Append | Write-Host
+Invoke-Wsl @('--status') | Tee-Object -FilePath $log -Append | Write-Host
+Invoke-Wsl @('--list','--verbose') | Tee-Object -FilePath $log -Append | Write-Host
 
 Write-Step "Download pinned Rocky Linux 9.8 WSL image and checksum"
 $base = "https://download.rockylinux.org/pub/rocky/9.8/images/x86_64"
@@ -132,13 +132,13 @@ if ($actual -ne $expected) {
 }
 
 Write-Step "Install isolated Rocky Linux WSL distro"
-$existing = (Invoke-Wsl --list --quiet) -split "`r?`n" | ForEach-Object { $_.Trim() }
+$existing = (Invoke-Wsl @('--list','--quiet')) -split "`r?`n" | ForEach-Object { $_.Trim() }
 if ($existing -contains $DistroName) {
     Write-Host "$DistroName already exists; skipping installation."
 } else {
     New-Item -ItemType Directory -Force -Path $DistroLocation | Out-Null
     "Distro VHDX location: $DistroLocation" | Tee-Object -FilePath $log -Append | Write-Host
-    Invoke-Wsl --install --from-file $imagePath --name $DistroName --location $DistroLocation |
+    Invoke-Wsl @('--install','--from-file',$imagePath,'--name',$DistroName,'--location',$DistroLocation) |
         Tee-Object -FilePath $log -Append | Write-Host
     if ($script:WslExitCode -ne 0) {
         throw "wsl --install --from-file failed with exit code $script:WslExitCode"
@@ -146,20 +146,24 @@ if ($existing -contains $DistroName) {
 }
 
 Write-Step "Verify distro is WSL2"
-Invoke-Wsl --list --verbose | Tee-Object -FilePath $log -Append | Write-Host
+Invoke-Wsl @('--list','--verbose') | Tee-Object -FilePath $log -Append | Write-Host
 
-$line = (Invoke-Wsl --list --verbose) -split "`r?`n" | Where-Object { $_ -match [regex]::Escape($DistroName) }
+$line = (Invoke-Wsl @('--list','--verbose')) -split "`r?`n" | Where-Object { $_ -match [regex]::Escape($DistroName) }
 if (-not $line) {
     throw "$DistroName was not found after installation."
 }
 if ($line -notmatch '\s2\s*$') {
     Write-Host "Converting $DistroName to WSL2..."
-    Invoke-Wsl --set-version $DistroName 2 | Write-Host
+    Invoke-Wsl @('--set-version',$DistroName,'2') | Write-Host
 }
 
 Write-Step "Capture Rocky basics"
-Invoke-Wsl -d $DistroName -- bash -lc 'cat /etc/os-release; echo; uname -a; echo; printf "WSL_INTEROP=%s\nDISPLAY=%s\nWAYLAND_DISPLAY=%s\n" "$WSL_INTEROP" "$DISPLAY" "$WAYLAND_DISPLAY"' |
+$rockyProbe = 'cat /etc/os-release; echo; uname -a; echo; echo "WSL_INTEROP=$WSL_INTEROP"; echo "DISPLAY=$DISPLAY"; echo "WAYLAND_DISPLAY=$WAYLAND_DISPLAY"'
+Invoke-Wsl @('-d', $DistroName, '--', 'bash', '-lc', $rockyProbe) |
     Tee-Object -FilePath $log -Append | Write-Host
+if ($script:WslExitCode -ne 0) {
+    throw "Rocky probe inside $DistroName failed with exit code $script:WslExitCode"
+}
 
 Write-Step "Phase 02 Windows-side bootstrap complete"
 Write-Host "Evidence: $log"
