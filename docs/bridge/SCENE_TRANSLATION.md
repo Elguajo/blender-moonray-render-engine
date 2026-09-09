@@ -96,38 +96,92 @@ render-fixture verification, not just attribute-name matching.
 ## Lights
 ```text
 Blender Light object (type: POINT / SUN / SPOT / AREA)
-→ RDL2 Light subclass  (Open — Phase 06: exact Blender-type → RDL2-class mapping)
+→ RDL2 Light subclass
   - node_xform          ← matrix_world
   - color / intensity / exposure / camera-visibility / shadowing
     (common to every rdl2::Light per shaders/lights.md)
 ```
-`.../shaders/lights.md` confirms `SphereLight` and `CylinderLight` exist and share a common
-`rdl2::Light` attribute base (color, intensity, exposure, camera visibility, shadowing). It
-does **not** enumerate the full shipped light set — do not assume Blender's Sun/Area/Spot map
-1:1 onto specific RDL2 classes until Phase 06 confirms the actual class list from MoonRay
-source or upstream user-reference docs. Unsupported light types must fail/fall back
-explicitly, never silently mis-render (`docs/phases/06-geometry-camera-lights.md` acceptance
-criteria).
+**Confirmed** against `moonray` source at the pinned commit (`eef67ae9...`): `dso/light/`
+ships nine built-ins — `SphereLight`, `DiskLight`, `DistantLight`, `SpotLight`, `RectLight`,
+`CylinderLight`, `EnvLight`, `MeshLight`, `PortalLight` — each sharing the common
+`rdl2::Light` base (color, intensity, exposure, camera visibility, shadowing) plus these
+confirmed class-specific attributes (from each DSO's `attributes.cc`):
+
+| RDL2 class | Key attributes | Proposed Blender source |
+|---|---|---|
+| `SphereLight` | `radius`, `sidedness`, `normalized`, `apply_scene_scale` | `POINT` |
+| `DistantLight` | `angular_extent`, `normalized` | `SUN` |
+| `SpotLight` | `inner_cone_angle`, `outer_cone_angle`, `angle_falloff_type`, `lens_radius`, `aspect_ratio`, `focal_plane_distance`, `black_level` | `SPOT` |
+| `RectLight` | `width`, `height`, `spread`, `sidedness` | `AREA` (shape = `SQUARE`/`RECTANGLE`) |
+| `DiskLight` | `radius`, `spread`, `sidedness` | `AREA` (shape = `DISK`) |
+| `CylinderLight` | `radius`, `height`, `sidedness` | no direct Blender light-type source |
+| `EnvLight` | (environment/dome) | World background, if mapped at all |
+| `MeshLight` | `geometry` (`SceneObject*` reference to the emitting geometry) | emissive-material mesh objects |
+| `PortalLight` | (env-light portal) | no direct Blender light-type source |
+
+This table **replaces the earlier "class list unconfirmed" caveat** — the class names and
+attributes above are read directly from source, not inferred from the plugin-authoring
+guide. What remains **Open — Phase 06** is the actual mapping *decision* and its
+render-fixture verification, in particular:
+- Blender's `AREA` light has a fourth shape, `ELLIPSE`, with no matching RDL2 primitive —
+  must fail/fall back explicitly rather than silently substitute `DiskLight`/`RectLight`.
+- Unit/value-scale conversion per attribute (e.g. Blender's radiometric power vs. RDL2
+  `intensity`/`exposure`/`normalized`).
+- Whether `CylinderLight`/`PortalLight` are exposed at all in the first supported set, since
+  Blender has no built-in light type that maps onto them directly.
+
+Unsupported light types must fail/fall back explicitly, never silently mis-render
+(`docs/phases/06-geometry-camera-lights.md` acceptance criteria).
 
 ## Materials
 ```text
 Blender Principled BSDF (+ supported node subset)
 → normalized intermediate material representation   (Open — Phase 07: exact schema)
-→ MoonRay Material shader configured via BsdfBuilder
-  (BsdfComponents such as MicrofacetIsotropicBRDF, LambertianBRDF, ...)
+→ MoonRay Material shader (DwaBaseMaterial or UsdPreviewSurface — see below),
+  itself implemented internally via BsdfBuilder / BsdfComponents
+  (MicrofacetIsotropicBRDF, LambertianBRDF, ...) — the bridge targets the
+  Material's declared attributes, not the BsdfBuilder API directly.
 ```
-Grounded in `.../shaders/materials.md`: MoonRay materials are not authored as flat
-attribute-to-attribute maps but as an ordered set of `BsdfComponent`s added through
-`BsdfBuilder`, which handles weighting/Fresnel/energy conservation. A **DwaBase-family
-standard shader** is the working assumption for MoonRay's production entry point for a
-Principled-like material, but no vendored developer-reference page documents its exact class
-name or attribute set — that page covers *writing new* shaders, not the shipped standard
-library. **Exact target class + attribute mapping is
-Open — Phase 07** and must be confirmed against MoonRay source headers or upstream
-user-reference docs before being asserted as supported, per the "never infer support solely
-from documentation" rule in `CLAUDE.md`. Phase 07 must also produce an explicit
-supported-node support matrix; unsupported nodes are surfaced explicitly, never silently
-dropped.
+Grounded in `.../shaders/materials.md`: a MoonRay Material shader's C++ implementation
+configures a `BsdfBuilder`, but the bridge (an RDL2 client, not a shader author) only ever
+sets the Material *scene object's* declared attributes — it does not call `BsdfBuilder`
+itself. Two confirmed candidate target classes, checked directly against source rather than
+inferred from the plugin-authoring guide:
+
+**`DwaBaseMaterial`** — confirmed to exist at `dso/material/DwaBase/DwaBaseMaterial.json` in
+the separate **`moonshine`** repository (not `moonray`/`scene_rdl2` core; pinned in
+`UPSTREAM_LOCK.json` as of this check). This is DreamWorks' production shading model —
+`interface_flags: INTERFACE_DWABASELAYERABLE`, attribute set assembled from ~17 included
+JSON fragments (fuzz, clearcoat, glitter, specular, refractive_index, metallic, roughness,
+anisotropy, iridescence, diffuse, subsurface, diffuse_transmission, transmission, normal,
+misc, emission). Confirmed key attributes: `albedo` (Rgb, base color), `roughness` (Float),
+`metallic` (Float, 0/1 toggle) + `metallic_color`/`metallic_edge_color`, `specular` (Float) +
+`refractive_index` (Float, default 1.5), `transmission` (Float toggle) +
+`transmission_color`, `emission` (Rgb) + `show_emission` (Bool), `input_normal`. Using it
+requires vendoring/building `moonshine` in addition to `moonray`/`scene_rdl2` — a real
+dependency-surface increase not required by any phase before Phase 07.
+
+**`UsdPreviewSurface`** — confirmed to exist at
+`dso/material/UsdPreviewSurface/UsdPreviewSurface.json` inside **`moonray` core itself**
+(already pinned, no extra repo). Confirmed attributes: `diffuseColor` (Rgb, default
+0.18 — note: linear-grey default, not Blender's 0.8), `emissiveColor`, `useSpecularWorkflow`
+(Bool), `specularColor`, `metallic` (Float), `roughness` (Float, default 0.5), `clearcoat`,
+`clearcoatRoughness`, `opacity`, `opacityThreshold`, `ior` (default 1.5), `normal` (Vec3f),
+`displacement`, `occlusion`. This is a near-1:1 structural match to Blender's Principled
+BSDF's core fields (base color / metallic / roughness / IOR / clearcoat / normal / opacity)
+and ships with the dependency set already required from Phase 03 onward.
+
+**This is a real Phase 07 tradeoff, not yet decided:** `DwaBaseMaterial` is the more
+production-complete shading model (fuzz, subsurface, diffuse transmission, iridescence,
+independent transmission IOR/roughness — none of which `UsdPreviewSurface` exposes) at the
+cost of a second vendored/built upstream repo; `UsdPreviewSurface` is lower-risk and
+structurally closer to Principled BSDF's field set but has a materially smaller feature
+surface (no subsurface, no fuzz/iridescence, single shared IOR for reflection+transmission).
+Phase 07 must make and record this choice (or a hybrid — e.g. `UsdPreviewSurface` first,
+`DwaBaseMaterial` as a later opt-in) with an ADR if the decision is consequential enough,
+per `CLAUDE.md`'s decision-worthy criteria. It must also produce an explicit supported-node
+support matrix regardless of target class; unsupported nodes are surfaced explicitly, never
+silently dropped.
 
 ## Textures
 ```text
@@ -167,10 +221,12 @@ but the bridge's own wire-level update protocol is **Open — Phase 06.**
 |---|---|
 | RDL2 `SceneContext`/`SceneObject`/`SceneClass`/`Attribute` as the target data model | **Decided** (RDL2 API, not a project choice) |
 | `node_xform` carries world transform for every `Node` subclass | **Decided** (RDL2 API) |
-| Mesh → `createPolygonMesh` + `PrimitiveAttributeTable` + `LayerAssignmentId` | **Decided shape**, exact bridge message layout **Open — Phase 04/06** |
-| Blender light type → specific RDL2 light class | **Open — Phase 06** |
-| Camera attribute set beyond focal/near/far | **Open — Phase 06** |
-| Principled BSDF → specific MoonRay material class/attributes | **Open — Phase 07** |
+| Mesh target class is `RdlMeshGeometry` | **Confirmed** (source-checked); bridge message layout **Open — Phase 04/06** |
+| Camera/light built-in class names + confirmed attribute lists | **Confirmed** (source-checked) |
+| Blender light type → specific RDL2 light class | **Proposed** (table above); render-fixture verification **Open — Phase 06** |
+| Camera field unit/convention mapping (lens↔focal, sensor fit, etc.) | **Open — Phase 06** |
+| `DwaBaseMaterial` vs. `UsdPreviewSurface` as the Principled BSDF target | **Confirmed both exist** (source-checked); **choice is Open — Phase 07** |
+| Principled BSDF → chosen material class's exact attribute mapping | **Open — Phase 07** |
 | Supported-node matrix (materials) | **Open — Phase 07**, mandatory before claiming support |
 | Instancing: native vs. expanded | **Open — Phase 07** |
 | Incremental update wire protocol | **Open — Phase 06** |

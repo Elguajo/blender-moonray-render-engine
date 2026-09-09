@@ -13,6 +13,7 @@
 │   ├── decisions/            ADRs
 │   ├── research/             Source-backed research
 │   ├── design/               Non-canonical detailed target designs
+│   ├── bridge/               Blender↔MoonRay bridge contract (target design; see docs/bridge/PROTOCOL.md)
 │   ├── runbooks/             Operator procedures
 │   ├── evidence/             Shareable evidence/templates
 │   └── maintainers/          Repository administration

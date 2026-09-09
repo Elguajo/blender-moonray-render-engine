@@ -28,6 +28,13 @@
     "locked_at": "2026-09-09",
     "notes": "Matches the commit already vendored under docs/vendor/openmoonray/UPSTREAM.json (developer-reference subtree)."
   },
+  "moonshine": {
+    "repo": "https://github.com/OpenMoonRay/moonshine",
+    "branch": "main",
+    "commit": "a3c8667298a23df7d6efed128cb475484de66c8e",
+    "locked_at": "2026-09-09",
+    "notes": "Not yet vendored/built locally. Recorded because DwaBaseMaterial (dso/material/DwaBase) and the rest of the DWA production shader set live here, not in moonray/scene_rdl2 core; confirmed via GitHub API at this commit while grounding docs/bridge/SCENE_TRANSLATION.md's material mapping. Required only if DwaBaseMaterial is chosen as the Principled-BSDF target in Phase 07 -- moonray core also ships UsdPreviewSurface (dso/material/UsdPreviewSurface) as a lower-dependency alternative."
+  },
   "blender": {
     "repo": "https://github.com/blender/blender",
     "branch": null,
