@@ -42,6 +42,14 @@ MoonRay and Blender carry large native dependency graphs. Loading MoonRay direct
 - External batch RDL/USD only: does not satisfy Blender-native workflow.
 - In-process MoonRay library on day one: rejected due crash/ABI risk before performance evidence.
 
+## Supporting evidence (added 2026-09-09)
+Local inspection of two production commercial Blender renderer integrations installed on the
+user's workstation (V-Ray for Blender/Chaos, Octane/OTOY) confirmed both use a separate
+renderer process talking to a thin Python/native client in Blender's process, not in-process
+embedding — independent, unsolicited corroboration of the out-of-process design chosen here.
+Full detail in `docs/decisions/ADR-0003-in-process-scene-rdl2-embedding-proposal.md`
+("Evidence from comparable production Blender integrations").
+
 ## Revisit triggers
 - direct bridge is blocked by unstable/unusable MoonRay APIs;
 - measured transport overhead remains unacceptable after optimized shared-memory/native data paths;

@@ -48,6 +48,13 @@ Grounded in `.../shaders/geometry-procedurals.md` (`createPolygonMesh`,
 built-ins confirmed in `dso/geometry/`: `RdlCurve`, `RdlInstancerGeometry`, `RdlPoint`,
 `Vdb`.
 
+**Reported, not yet source-verified:** a third-party scene_rdl2 pybind11 experiment noted
+that a `GeometrySet` scene object must exist and contain the geometry for a render to be
+valid, even when nothing else references that `GeometrySet`
+([OpenMoonRay discussion #223](https://github.com/OpenMoonRay/openmoonray/discussions/223)).
+Treat as a hypothesis to confirm against `scene_rdl2`'s `GeometrySet.h`/`.cc` and
+`RenderContext` before relying on it in Phase 06 geometry work, not as a decided fact.
+
 ## Transforms
 ```text
 Blender object.matrix_world

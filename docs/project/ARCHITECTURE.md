@@ -26,6 +26,19 @@ A separate native process is the initial production boundary because Blender and
 
 Hydra remains useful for comparison and as an emergency fallback, but it is no longer a mandatory dependency or architecture constraint.
 
+## scene_rdl2 Python bindings — evaluated, not required
+The bridge integrates scene_rdl2 through its native C++ API only (see the `moonray_bridge`
+stack entry above) — it does not need its own Python↔scene_rdl2 binding layer, and the
+Blender add-on never touches scene_rdl2 directly, only bridge IPC. scene_rdl2 itself already
+ships official `boost::python` bindings upstream (`mod/python/py_scene_rdl2`). A community
+pybind11 experiment also exists
+([OpenMoonRay discussion #223](https://github.com/OpenMoonRay/openmoonray/discussions/223),
+[alanblevins/scene_rdl2_pybind11](https://github.com/alanblevins/scene_rdl2_pybind11)), but
+its own author built it as a Claude Code learning exercise, explicitly not for production use
+("just use the bindings that ship with Moonray"), and it is macOS-only. Neither is a
+dependency of this project; revisit only if an architecture-change trigger below makes an
+in-process Python integration attractive.
+
 ## System shape
 ```text
 Windows 11 workstation
