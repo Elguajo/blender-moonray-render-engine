@@ -1,50 +1,77 @@
 {
-  "_comment": "Pinned upstream commit SHAs for MoonRay-related dependencies. MoonRay is under active development (build/GPU/API surfaces change frequently); this file is the single source of truth for which upstream commit each vendored artifact, doc reference, and future source integration corresponds to. Update deliberately, not automatically, and record the reason in this file's history via git log.",
+  "_comment": "Pinned upstream commit SHAs for MoonRay-related dependencies. MoonRay is under active development (build/GPU/API surfaces change frequently); this file is the single source of truth for which upstream commit each vendored artifact, doc reference, and future source integration corresponds to. Update deliberately, not automatically, and record the reason in this file's history via git log. Phase 03 pre-build audit (2026-09-09, docs/research/03-upstream-pin-audit.md) re-verified every entry below directly against the GitHub API and added provenance fields ('source', 'superproject_commit') plus two build-critical repositories the original snapshot omitted (mcrt_denoise, cmake_modules).",
   "openmoonray": {
     "repo": "https://github.com/OpenMoonRay/openmoonray",
     "branch": "main",
     "commit": "b9b0ac29135b26e20a51edf9028558bb64df6700",
+    "source": "user-selected-anchor",
     "locked_at": "2026-09-09",
-    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration. This is the reconciliation anchor superproject commit: moonray/scene_rdl2/moonshine below were verified 2026-09-09 (via GitHub API) to match the submodule gitlinks this commit's tree actually pins, not fetched independently as separate 'latest main' snapshots. Phase 03 must re-verify against this commit's .gitmodules/tree before building, since openmoonray's main branch moves."
+    "notes": "This is the reconciliation anchor superproject commit: moonray/scene_rdl2/moonshine/mcrt_denoise/cmake_modules below are the exact gitlink commits this commit's tree references, read live from the GitHub Git Trees API, not fetched independently as separate 'latest main' snapshots. Phase 03 pre-build audit (2026-09-09) re-confirmed this commit is real and, as of that date, is also the current tip of openmoonray's main branch -- the pin is not stale. A tagged release v2026.29.1 (d96c6e30a8c280d4b5eb3bafa5e54efc445d7ea8, published 2026-07-17) predates this pin by ~5.5 weeks and is recorded here only as a known rollback candidate; there is no concrete evidence to prefer it over main HEAD, so this commit remains authoritative. Re-verify against this commit's .gitmodules/tree again before the actual Phase 03 build, since openmoonray's main branch continues to move."
   },
   "moonray": {
     "repo": "https://github.com/OpenMoonRay/moonray",
     "branch": "main",
     "commit": "eef67ae992b5037943a7716cca96ed443c36dcec",
+    "source": "openmoonray-superproject-gitlink",
+    "superproject_commit": "b9b0ac29135b26e20a51edf9028558bb64df6700",
     "locked_at": "2026-09-09",
-    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration. Verified 2026-09-09: matches the moonray/moonray submodule gitlink in the openmoonray superproject at commit b9b0ac29135b26e20a51edf9028558bb64df6700 (see openmoonray.notes above)."
+    "notes": "Not yet vendored/built locally. Verified 2026-09-09 twice: originally, and re-confirmed during the Phase 03 pre-build audit via a live GitHub Git Trees API read of the moonray/ subtree at the openmoonray superproject commit above (gitlink type 'commit', matches exactly). Commit dated 2026-07-15."
   },
   "scene_rdl2": {
     "repo": "https://github.com/OpenMoonRay/scene_rdl2",
     "branch": "main",
     "commit": "1229d3eaa1ee41dc1ddefbe781c623edceafbac8",
+    "source": "openmoonray-superproject-gitlink",
+    "superproject_commit": "b9b0ac29135b26e20a51edf9028558bb64df6700",
     "locked_at": "2026-09-09",
-    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration. Verified 2026-09-09: matches the moonray/scene_rdl2 submodule gitlink in the openmoonray superproject at commit b9b0ac29135b26e20a51edf9028558bb64df6700 (see openmoonray.notes above)."
+    "notes": "Not yet vendored/built locally. Verified 2026-09-09 twice: originally, and re-confirmed during the Phase 03 pre-build audit via a live GitHub Git Trees API read of the moonray/ subtree at the openmoonray superproject commit above (gitlink type 'commit', matches exactly). Commit dated 2026-08-18."
+  },
+  "mcrt_denoise": {
+    "repo": "https://github.com/OpenMoonRay/mcrt_denoise",
+    "branch": "main",
+    "commit": "0050e726309a533e7964bd05380430e6b06cce7a",
+    "source": "openmoonray-superproject-gitlink",
+    "superproject_commit": "b9b0ac29135b26e20a51edf9028558bb64df6700",
+    "locked_at": "2026-09-09",
+    "notes": "Added by the Phase 03 pre-build audit (docs/research/03-upstream-pin-audit.md); the original UPSTREAM_LOCK snapshot omitted it even though upstream's own building-moonray/repo_deps.md lists it as moonray's internal dependency (denoiser) alongside scene_rdl2. Read live from the moonray/ subtree gitlink at the superproject commit above. Commit dated 2026-05-28. Its external deps (cuda, openimagedenoise, optix, cppunit) mean CPU-only Phase 03 baseline must confirm it can build/link with GPU denoise disabled -- this is an open Phase 03 build risk, not resolved by this audit."
+  },
+  "cmake_modules": {
+    "repo": "https://github.com/OpenMoonRay/cmake_modules",
+    "branch": "main",
+    "commit": "1b1b7af8111b0a8ceaff45f3c47a778b0ca07ec4",
+    "source": "openmoonray-superproject-gitlink",
+    "superproject_commit": "b9b0ac29135b26e20a51edf9028558bb64df6700",
+    "locked_at": "2026-09-09",
+    "notes": "Added by the Phase 03 pre-build audit (docs/research/03-upstream-pin-audit.md); shared CMake build modules required by every component's build, referenced from the openmoonray top-level CMakeLists.txt via CMAKE_MODULE_PATH. Read live from the root tree gitlink at the superproject commit above. Commit dated 2026-08-12."
   },
   "docs": {
     "repo": "https://github.com/OpenMoonRay/openmoonray-docs",
     "branch": "main",
     "commit": "74902f54fd490b3ec23b33505b99f37d44ef10e3",
+    "source": "official-repo-main",
     "locked_at": "2026-09-09",
-    "notes": "Matches the commit already vendored under docs/vendor/openmoonray/UPSTREAM.json (developer-reference subtree)."
+    "notes": "Matches the commit already vendored under docs/vendor/openmoonray/UPSTREAM.json (developer-reference subtree). Phase 03 pre-build audit (2026-09-09) classified this against the source pin: dated 2026-08-27, i.e. newer than the openmoonray source pin (2026-08-25) by 2 days, same release window ('Update docs for 2026-08-27 internal release'). Not stale; no re-vendoring needed."
   },
   "moonshine": {
     "repo": "https://github.com/OpenMoonRay/moonshine",
     "branch": "main",
     "commit": "a3c8667298a23df7d6efed128cb475484de66c8e",
+    "source": "openmoonray-superproject-gitlink",
+    "superproject_commit": "b9b0ac29135b26e20a51edf9028558bb64df6700",
     "locked_at": "2026-09-09",
-    "notes": "Not yet vendored/built locally. Recorded because DwaBaseMaterial (dso/material/DwaBase) and the rest of the DWA production shader set live here, not in moonray/scene_rdl2 core; confirmed via GitHub API at this commit while grounding docs/bridge/SCENE_TRANSLATION.md's material mapping. Required only if DwaBaseMaterial is chosen as the Principled-BSDF target in Phase 07 -- moonray core also ships UsdPreviewSurface (dso/material/UsdPreviewSurface) as a lower-dependency alternative. Also verified 2026-09-09 to match the moonray/moonshine submodule gitlink in the openmoonray superproject at commit b9b0ac29135b26e20a51edf9028558bb64df6700 (see openmoonray.notes above)."
+    "notes": "Not yet vendored/built locally. Recorded because DwaBaseMaterial (dso/material/DwaBase) and the rest of the DWA production shader set live here, not in moonray/scene_rdl2 core; confirmed via GitHub API at this commit while grounding docs/bridge/SCENE_TRANSLATION.md's material mapping. Required only if DwaBaseMaterial is chosen as the Principled-BSDF target in Phase 07 -- moonray core also ships UsdPreviewSurface (dso/material/UsdPreviewSurface) as a lower-dependency alternative. Verified 2026-09-09 twice: originally, and re-confirmed during the Phase 03 pre-build audit via a live GitHub Git Trees API read of the moonray/ subtree at the openmoonray superproject commit above (gitlink type 'commit', matches exactly). Commit dated 2026-07-13."
   },
   "blender": {
     "repo": "https://github.com/blender/blender",
     "branch": "blender-v5.2-release",
     "commit": "9e2066aef7ef7e20c142ad7bd3303138a4304c93",
+    "source": "official-github-tag",
     "locked_at": "2026-09-09",
     "version": "5.2.1",
     "source_tag": "v5.2.1",
     "platform": "linux-x64",
     "archive": "blender-5.2.1-linux-x64.tar.xz",
     "binary_sha256": "a31f524fa99a527d3d52b7f5aaa68c34e1a19d5a1c9473f79c5cc610fd5b10e9",
-    "notes": "Installed and verified on real hardware in Phase 02 (docs/completions/02-host-runtime-foundation.md, docs/evidence/phase02-host-evidence.md). commit is the full git SHA of the v5.2.1 tag on https://github.com/blender/blender (confirmed via GitHub API 2026-09-09); its first 12 hex chars match the build hash 9e2066aef7ef that the installed Blender binary itself reports. binary_sha256 was verified during Phase 02 against Blender's officially published checksum for this archive."
+    "notes": "Installed and verified on real hardware in Phase 02 (docs/completions/02-host-runtime-foundation.md, docs/evidence/phase02-host-evidence.md). commit is the full git SHA of the v5.2.1 tag on https://github.com/blender/blender; its first 12 hex chars match the build hash 9e2066aef7ef that the installed Blender binary itself reports. binary_sha256 was verified during Phase 02 against Blender's officially published checksum for this archive. Independently re-verified during the Phase 03 pre-build audit (2026-09-09) by resolving the v5.2.1 tag ref directly against the GitHub API: it resolves to exactly this SHA. This is a real, observed source commit, not an UNKNOWN placeholder."
   }
 }

@@ -1,0 +1,33 @@
+{
+  "_comment": "Minimal machine-readable Phase 03 build input, derived from UPSTREAM_LOCK.json (the human/project-wide source of truth). See docs/research/03-upstream-pin-audit.md for how these pins were reconciled. Not built yet.",
+  "profile": "cpu-baseline",
+  "superproject": {
+    "repository": "https://github.com/OpenMoonRay/openmoonray",
+    "commit": "b9b0ac29135b26e20a51edf9028558bb64df6700"
+  },
+  "components": {
+    "cmake_modules": "1b1b7af8111b0a8ceaff45f3c47a778b0ca07ec4",
+    "scene_rdl2": "1229d3eaa1ee41dc1ddefbe781c623edceafbac8",
+    "mcrt_denoise": "0050e726309a533e7964bd05380430e6b06cce7a",
+    "moonray": "eef67ae992b5037943a7716cca96ed443c36dcec",
+    "moonshine": "a3c8667298a23df7d6efed128cb475484de66c8e"
+  },
+  "cmake_configure_flags": [
+    "-DPYTHON_EXECUTABLE=python3",
+    "-DBOOST_PYTHON_COMPONENT_NAME=python39",
+    "-DABI_VERSION=0",
+    "-DBUILD_QT_APPS=NO",
+    "-DMOONRAY_USE_OPTIX=NO"
+  ],
+  "excluded_paths": [
+    "moonray/moonray_gui",
+    "moonray/render_profile_viewer",
+    "moonray/moonray_dcc_plugins",
+    "moonray/materialx_shaders",
+    "rats",
+    "moonray/moonshine_usd",
+    "moonray/hydra/hdMoonray",
+    "moonray/hydra/moonray_sdr_plugins",
+    "arras"
+  ]
+}

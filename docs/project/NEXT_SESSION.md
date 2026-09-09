@@ -10,7 +10,13 @@ Windows 11 build 10.0.26100.9445
         └── Blender 5.2.1 LTS Linux, GUI verified through WSLg
 ```
 
-Phase 03 is the current `[>]` phase and has **not** been started. It requires explicit user approval before execution.
+Phase 03 is the current `[>]` phase. Its pre-build upstream dependency audit is complete
+(`docs/research/03-upstream-pin-audit.md`, 2026-09-09): the pinned `openmoonray` superproject
+commit, and the `moonray`/`scene_rdl2`/`moonshine` gitlinks it references, were reconciled and
+found internally consistent; `mcrt_denoise` and `cmake_modules` were added as previously
+untracked build-critical dependencies; the Blender pin was independently re-verified against
+the official GitHub mirror. A build plan is prepared (`docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.md`).
+**No build has been attempted.** It requires explicit user approval before execution.
 
 ## Durable decisions
 - Windows 11 workstation host.
@@ -37,7 +43,10 @@ Phase 03 is the current `[>]` phase and has **not** been started. It requires ex
 
 ## Supporting repository infrastructure
 - `docs/vendor/openmoonray/` — pinned local mirror of the OpenMoonRay developer-reference documentation (see its `UPSTREAM.json` / `ATTRIBUTION.md`). Reference material only; it does not advance any phase.
-- `UPSTREAM_LOCK.json` — pinned OpenMoonRay dependency commits. Phase 03 must reconcile its source pins against this file rather than choosing new commits ad hoc.
+- `UPSTREAM_LOCK.json` — pinned OpenMoonRay dependency commits, reconciled against the openmoonray superproject's own submodule gitlinks as of the Phase 03 pre-build audit (2026-09-09). Treat as canonical; do not choose new commits ad hoc.
+- `configs/moonray-source-lock.json` — minimal machine-readable build manifest derived from `UPSTREAM_LOCK.json`, for the CPU-baseline component subset only.
+- `docs/research/03-upstream-pin-audit.md` — the Phase 03 pre-build audit: dependency reconciliation table, full 20-submodule inventory with required/optional/excluded classification, and build risks pulled from real upstream build docs.
+- `docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.md` — the prepared (not executed) Phase 03 build plan: clone/checkout/build/install/test/rollback steps.
 
 ## Read first
 1. `AGENTS.md` / `CLAUDE.md` as applicable.
@@ -50,12 +59,15 @@ Phase 03 is the current `[>]` phase and has **not** been started. It requires ex
 8. `docs/completions/02-host-runtime-foundation.md` and `docs/evidence/phase02-host-evidence.md` for host facts.
 
 ## Current assignment — Phase 03 only, after explicit approval
-Build a pinned, reproducible native MoonRay runtime inside `MoonRay-Rocky9` and prove a minimal CPU render:
-- verify current upstream MoonRay build prerequisites from primary sources before building;
-- pin exact MoonRay / scene_rdl2 source commits or release tags and record checksums, reconciled against `UPSTREAM_LOCK.json`;
+Pre-build audit is done (see above). What remains, build a pinned, reproducible native MoonRay
+runtime inside `MoonRay-Rocky9` and prove a minimal CPU render, following
+`docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.md`:
+- clone `openmoonray` at `b9b0ac29135b26e20a51edf9028558bb64df6700` and sync the pinned submodule gitlinks (`configs/moonray-source-lock.json`);
+- install Rocky 9 packages with `--nocuda`, configure with `-DMOONRAY_USE_OPTIX=NO -DBUILD_QT_APPS=NO -DPYTHON_EXECUTABLE=python3 -DBOOST_PYTHON_COMPONENT_NAME=python39 -DABI_VERSION=0`;
 - build and install into `/root/moonray-blender/{src,build,install}`;
 - run a minimal standalone CPU render and capture the output artifact;
-- record runtime paths, DSOs, logs and a rollback procedure.
+- record runtime paths, DSOs, logs and a rollback procedure;
+- watch the open build risks recorded in `docs/research/03-upstream-pin-audit.md` (CMake version, ISPC toolchain, Python 3.9 boost binding assumption unverified inside the distro, `mcrt_denoise` GPU-disable flag uncertainty, serial dependency build time, 15 GiB WSL RAM vs. 28-thread `-j` parallelism).
 
 Explicitly out of scope for Phase 03: hdMoonray/Hydra, any Blender add-on or `RenderEngine` work, viewport, XPU acceptance.
 
