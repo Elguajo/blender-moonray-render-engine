@@ -1,0 +1,38 @@
+{
+  "_comment": "Pinned upstream commit SHAs for MoonRay-related dependencies. MoonRay is under active development (build/GPU/API surfaces change frequently); this file is the single source of truth for which upstream commit each vendored artifact, doc reference, and future source integration corresponds to. Update deliberately, not automatically, and record the reason in this file's history via git log.",
+  "openmoonray": {
+    "repo": "https://github.com/OpenMoonRay/openmoonray",
+    "branch": "main",
+    "commit": "b9b0ac29135b26e20a51edf9028558bb64df6700",
+    "locked_at": "2026-09-09",
+    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration."
+  },
+  "moonray": {
+    "repo": "https://github.com/OpenMoonRay/moonray",
+    "branch": "main",
+    "commit": "eef67ae992b5037943a7716cca96ed443c36dcec",
+    "locked_at": "2026-09-09",
+    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration."
+  },
+  "scene_rdl2": {
+    "repo": "https://github.com/OpenMoonRay/scene_rdl2",
+    "branch": "main",
+    "commit": "1229d3eaa1ee41dc1ddefbe781c623edceafbac8",
+    "locked_at": "2026-09-09",
+    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration."
+  },
+  "docs": {
+    "repo": "https://github.com/OpenMoonRay/openmoonray-docs",
+    "branch": "main",
+    "commit": "74902f54fd490b3ec23b33505b99f37d44ef10e3",
+    "locked_at": "2026-09-09",
+    "notes": "Matches the commit already vendored under docs/vendor/openmoonray/UPSTREAM.json (developer-reference subtree)."
+  },
+  "blender": {
+    "repo": "https://github.com/blender/blender",
+    "branch": null,
+    "commit": null,
+    "locked_at": null,
+    "notes": "Baseline not yet selected. Fill in once a target Blender 5.2+ version/commit is pinned for RenderEngine API compatibility."
+  }
+}
