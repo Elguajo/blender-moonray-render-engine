@@ -2,6 +2,10 @@
 
 This document is a **target**, not an implementation claim.
 
+Detailed per-topic contract (message schema/versioning, scene translation, framebuffer/AOV
+delivery, error model, lifecycle) lives under [`docs/bridge/`](../bridge/PROTOCOL.md); this
+page stays the short product-level summary.
+
 ## Product surface
 ```text
 Blender
