@@ -1,6 +1,6 @@
 # Phase 03 — Reproducible native MoonRay runtime
 
-Status: PLANNED
+Status: CURRENT — BLOCKED ON USER APPROVAL
 
 ## Goal
 Build or install a pinned standalone MoonRay runtime inside the validated Linux/WSL environment, independent of Hydra, and prove a minimal CPU render from MoonRay-native tooling/APIs.

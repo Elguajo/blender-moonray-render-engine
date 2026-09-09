@@ -1,4 +1,4 @@
-# AGENT HANDOFF — MoonRay Blender Bridge
+# AGENT HANDOFF — Direct MoonRay Render Engine for Blender 5.2+
 
 This repository uses a phase-gated Progressive Context workflow and can be continued with Codex or Claude Code.
 

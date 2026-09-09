@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for contributing to MoonRay Blender Bridge.
+Thanks for contributing to the Direct MoonRay Render Engine for Blender 5.2+ project.
 
 This is an experimental renderer-integration project where exact versions, reproducibility and observed evidence matter more than assumptions.
 

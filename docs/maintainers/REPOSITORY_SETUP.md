@@ -59,7 +59,7 @@ v0.5.0-viewport-preview
 
 ## Suggested social preview
 ```text
-MoonRay Blender Bridge
+Direct MoonRay Render Engine for Blender 5.2+
 Blender RenderEngine ↔ Direct Bridge ↔ MoonRay
 WSL2 / Linux • Experimental
 ```

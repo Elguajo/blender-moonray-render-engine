@@ -1,4 +1,4 @@
-# MoonRay Blender Bridge
+# Direct MoonRay Render Engine for Blender 5.2+
 
 ![Status](https://img.shields.io/badge/status-experimental-orange)
 ![Blender](https://img.shields.io/badge/Blender-5.2.1%20LTS-blue)

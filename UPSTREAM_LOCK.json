@@ -5,21 +5,21 @@
     "branch": "main",
     "commit": "b9b0ac29135b26e20a51edf9028558bb64df6700",
     "locked_at": "2026-09-09",
-    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration."
+    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration. This is the reconciliation anchor superproject commit: moonray/scene_rdl2/moonshine below were verified 2026-09-09 (via GitHub API) to match the submodule gitlinks this commit's tree actually pins, not fetched independently as separate 'latest main' snapshots. Phase 03 must re-verify against this commit's .gitmodules/tree before building, since openmoonray's main branch moves."
   },
   "moonray": {
     "repo": "https://github.com/OpenMoonRay/moonray",
     "branch": "main",
     "commit": "eef67ae992b5037943a7716cca96ed443c36dcec",
     "locked_at": "2026-09-09",
-    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration."
+    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration. Verified 2026-09-09: matches the moonray/moonray submodule gitlink in the openmoonray superproject at commit b9b0ac29135b26e20a51edf9028558bb64df6700 (see openmoonray.notes above)."
   },
   "scene_rdl2": {
     "repo": "https://github.com/OpenMoonRay/scene_rdl2",
     "branch": "main",
     "commit": "1229d3eaa1ee41dc1ddefbe781c623edceafbac8",
     "locked_at": "2026-09-09",
-    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration."
+    "notes": "Not yet vendored/built locally; recorded as of first UPSTREAM_LOCK creation for future integration. Verified 2026-09-09: matches the moonray/scene_rdl2 submodule gitlink in the openmoonray superproject at commit b9b0ac29135b26e20a51edf9028558bb64df6700 (see openmoonray.notes above)."
   },
   "docs": {
     "repo": "https://github.com/OpenMoonRay/openmoonray-docs",
@@ -33,13 +33,18 @@
     "branch": "main",
     "commit": "a3c8667298a23df7d6efed128cb475484de66c8e",
     "locked_at": "2026-09-09",
-    "notes": "Not yet vendored/built locally. Recorded because DwaBaseMaterial (dso/material/DwaBase) and the rest of the DWA production shader set live here, not in moonray/scene_rdl2 core; confirmed via GitHub API at this commit while grounding docs/bridge/SCENE_TRANSLATION.md's material mapping. Required only if DwaBaseMaterial is chosen as the Principled-BSDF target in Phase 07 -- moonray core also ships UsdPreviewSurface (dso/material/UsdPreviewSurface) as a lower-dependency alternative."
+    "notes": "Not yet vendored/built locally. Recorded because DwaBaseMaterial (dso/material/DwaBase) and the rest of the DWA production shader set live here, not in moonray/scene_rdl2 core; confirmed via GitHub API at this commit while grounding docs/bridge/SCENE_TRANSLATION.md's material mapping. Required only if DwaBaseMaterial is chosen as the Principled-BSDF target in Phase 07 -- moonray core also ships UsdPreviewSurface (dso/material/UsdPreviewSurface) as a lower-dependency alternative. Also verified 2026-09-09 to match the moonray/moonshine submodule gitlink in the openmoonray superproject at commit b9b0ac29135b26e20a51edf9028558bb64df6700 (see openmoonray.notes above)."
   },
   "blender": {
     "repo": "https://github.com/blender/blender",
-    "branch": null,
-    "commit": null,
-    "locked_at": null,
-    "notes": "Baseline not yet selected. Fill in once a target Blender 5.2+ version/commit is pinned for RenderEngine API compatibility."
+    "branch": "blender-v5.2-release",
+    "commit": "9e2066aef7ef7e20c142ad7bd3303138a4304c93",
+    "locked_at": "2026-09-09",
+    "version": "5.2.1",
+    "source_tag": "v5.2.1",
+    "platform": "linux-x64",
+    "archive": "blender-5.2.1-linux-x64.tar.xz",
+    "binary_sha256": "a31f524fa99a527d3d52b7f5aaa68c34e1a19d5a1c9473f79c5cc610fd5b10e9",
+    "notes": "Installed and verified on real hardware in Phase 02 (docs/completions/02-host-runtime-foundation.md, docs/evidence/phase02-host-evidence.md). commit is the full git SHA of the v5.2.1 tag on https://github.com/blender/blender (confirmed via GitHub API 2026-09-09); its first 12 hex chars match the build hash 9e2066aef7ef that the installed Blender binary itself reports. binary_sha256 was verified during Phase 02 against Blender's officially published checksum for this archive."
   }
 }
