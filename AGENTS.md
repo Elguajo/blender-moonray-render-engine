@@ -18,6 +18,12 @@ Primary production path is **Blender RenderEngine ↔ Direct local MoonRay Bridg
 
 Do not claim Direct Bridge is faster than Hydra without measured benchmark evidence.
 
+## MoonRay API/design questions
+1. Inspect `docs/vendor/openmoonray/developer-reference/` first (search for the relevant file/topic; do not load the whole tree into context).
+2. Then check the pinned MoonRay source headers when an exact API/ABI/behavior matters.
+3. Use current official upstream sources (https://docs.openmoonray.org/, https://github.com/OpenMoonRay/openmoonray-docs) when local docs may be stale.
+4. Never infer support solely from documentation.
+
 ## Execution
 - Preserve unrelated edits; inspect git status first.
 - Use official/current primary docs for version-sensitive behavior.

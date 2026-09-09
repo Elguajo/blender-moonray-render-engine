@@ -1,0 +1,30 @@
+{
+  "project": "OpenMoonRay Documentation",
+  "repository": "https://github.com/OpenMoonRay/openmoonray-docs",
+  "source_path": "docs/developer-reference",
+  "extra_source_paths": [
+    "docs/assets/images/developer-reference/arras/arras-session-diagram.png"
+  ],
+  "website": "https://docs.openmoonray.org/developer-reference/",
+  "license": "CC-BY-4.0",
+  "branch": "main",
+  "commit": "74902f54fd490b3ec23b33505b99f37d44ef10e3",
+  "imported_at": "2026-09-09T06:07:39Z",
+  "imported_file_count": 197,
+  "extra_asset_file_count": 1,
+  "local_link_modifications": [
+    {
+      "files": [
+        "developer-reference/arras/index.md",
+        "developer-reference/arras/arras-session-definitions.md"
+      ],
+      "change": "Rewrote Jekyll liquid image tag '{{ \"/assets/images/developer-reference/arras/arras-session-diagram.png\" | absolute_url }}' to a plain relative Markdown image path '../../assets/images/developer-reference/arras/arras-session-diagram.png' so the vendored image resolves outside the Jekyll build.",
+      "reason": "Jekyll liquid templating does not render outside the upstream Jekyll site; this was the minimum change required for the vendored image to display locally."
+    }
+  ],
+  "known_unresolved_links": [
+    "Other '{{ ... | absolute_url }}' liquid references to pages outside docs/developer-reference/ (e.g. getting-started, user-reference, coding-standards index) are left unmodified and do not resolve locally; they still point conceptually to https://docs.openmoonray.org/.",
+    "Relative links such as '../../../user-reference/...' in arras-session-definitions.md point outside the vendored subtree and are left unmodified.",
+    "Internal cross-references between developer-reference pages use extensionless Jekyll permalinks (e.g. '(source-structure)') and are left unmodified; the target files exist in this vendored tree under the same name with a .md extension."
+  ]
+}

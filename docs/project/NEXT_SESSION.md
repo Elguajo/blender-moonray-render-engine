@@ -1,7 +1,7 @@
 # Next Session — Direct MoonRay Render Engine for Blender 5.2+
 
 ## Current state
-Phase 00 and Phase 01 are complete. The user approved a material architecture change: **Direct MoonRay Bridge is now the primary integration path**. ADR-0002 records this decision. Phase 02 remains the current approved phase because WSL2/Blender host validation is still required regardless of integration path.
+Phase 00 and Phase 01 are complete. The user approved a material architecture change: **Direct MoonRay Bridge is now the primary integration path**. ADR-0002 records this decision. Phase 02 remains the current approved phase because WSL2/Blender host validation is still required regardless of integration path. A pinned local mirror of the OpenMoonRay developer-reference documentation was added as supporting repository infrastructure (`docs/vendor/openmoonray/`); this does not advance or complete Phase 02.
 
 ## Durable decisions
 - Windows 11 workstation host.
