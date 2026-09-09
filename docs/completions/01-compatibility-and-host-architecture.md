@@ -8,7 +8,7 @@ A source-backed production architecture was selected for running MoonRay as a Bl
 
 ## Delivered
 - Compatibility matrix: `docs/research/01-compatibility-matrix.md`.
-- Accepted architecture decision: `docs/decisions/ADR-0001-wsl2-linux-blender-hydra-host.md`.
+- Accepted architecture decision: `docs/decisions/ADR-0001-wsl2-linux-host-boundary.md`.
 - Updated canonical architecture: `docs/project/ARCHITECTURE.md`.
 - Initial frozen host baseline: Blender 5.2.1 LTS.
 - Preferred delegate line: HdMoonray 10 (`hdm_10`) because it targets Hydra 2.0 clients.

@@ -4,10 +4,11 @@
   "date": "2026-09-09",
   "architecture": "Blender RenderEngine <-> out-of-process Direct MoonRay Bridge <-> MoonRay",
   "hydra_role": "reference/fallback/benchmark only",
-  "current_phase": "02-host-runtime-foundation",
+  "current_phase": "03-moonray-native-runtime",
   "completed_phases": [
     "00",
-    "01"
+    "01",
+    "02"
   ],
   "planned_final_phase": "12"
 }

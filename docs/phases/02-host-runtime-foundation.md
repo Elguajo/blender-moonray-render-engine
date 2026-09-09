@@ -8,7 +8,7 @@ Phase 01 accepted WSL2/WSLg as the production execution boundary. Rocky Linux 9 
 
 ## Context hints
 - `docs/project/ARCHITECTURE.md`
-- `docs/decisions/ADR-0001-wsl2-linux-blender-hydra-host.md`
+- `docs/decisions/ADR-0001-wsl2-linux-host-boundary.md`
 - `docs/research/01-compatibility-matrix.md`
 - `docs/completions/01-compatibility-and-host-architecture.md`
 
@@ -36,29 +36,29 @@ Phase 01 accepted WSL2/WSLg as the production execution boundary. Rocky Linux 9 
 - `docs/runbooks/PHASE02_HOST_SETUP.md` — operator runbook.
 - `docs/evidence/phase02-host-evidence.template.md` — durable evidence template.
 
-Execution state: **prepared, awaiting real-workstation run**. The phase must not be marked complete until the verifier and GUI smoke test pass on the user's Windows workstation.
+Execution state: **executed and verified on the real workstation** (`DESKTOP-9O2U790`, 2026-09-09). Verifier ended `PHASE02_RESULT=PASS` (11 PASS / 1 WARN / 0 FAIL) and the Blender GUI smoke test was observed through WSLg.
 
 ## Tasks
-- [ ] Capture workstation and WSL inventory.
-- [ ] Establish/update WSL2 + WSLg baseline.
-- [ ] Establish isolated Rocky Linux 9.x distro and verify system basics.
-- [ ] Create production-safe Linux filesystem layout.
-- [ ] Verify WSLg GUI and graphics path.
-- [ ] Install/pin Blender 5.2.1 LTS Linux.
-- [ ] Verify Blender GUI launch, version, test file I/O and bundled Python.
-- [ ] Inspect Blender bundled OpenUSD identity/namespace evidence from the running host.
-- [ ] Verify GPU/CUDA visibility without yet enabling MoonRay XPU.
-- [ ] Record exact host/runtime versions and recovery steps.
+- [x] Capture workstation and WSL inventory.
+- [x] Establish/update WSL2 + WSLg baseline.
+- [x] Establish isolated Rocky Linux 9.x distro and verify system basics.
+- [x] Create production-safe Linux filesystem layout.
+- [x] Verify WSLg GUI and graphics path.
+- [x] Install/pin Blender 5.2.1 LTS Linux.
+- [x] Verify Blender GUI launch, version, test file I/O and bundled Python.
+- [x] Inspect Blender bundled OpenUSD identity/namespace evidence from the running host.
+- [x] Verify GPU/CUDA visibility without yet enabling MoonRay XPU.
+- [x] Record exact host/runtime versions and recovery steps.
 
 ## Acceptance criteria
-- [ ] Exact Windows build, WSL version/kernel, distro release, Blender version, CPU/RAM/GPU/driver inventory is recorded.
-- [ ] WSL2 distro starts/stops reproducibly without modifying the user's primary Windows Blender installation.
-- [ ] WSLg launches Blender 5.2.1 Linux successfully.
-- [ ] Blender can create, save, close and reopen a minimal `.blend` from the chosen Linux-native project path.
-- [ ] Blender's runtime exposes enough `pxr`/USD information to confirm the host dependency identity needed for Phase 03.
-- [ ] If NVIDIA GPU exists, WSL can identify the device/driver and run a minimal CUDA visibility check; failure is recorded without blocking the CPU baseline unless it breaks Blender/WSLg.
-- [ ] Build/source/install/cache directories are separated and documented.
-- [ ] Reproduction and rollback/start-stop instructions are written.
+- [x] Exact Windows build, WSL version/kernel, distro release, Blender version, CPU/RAM/GPU/driver inventory is recorded.
+- [x] WSL2 distro starts/stops reproducibly without modifying the user's primary Windows Blender installation.
+- [x] WSLg launches Blender 5.2.1 Linux successfully.
+- [x] Blender can create, save, close and reopen a minimal `.blend` from the chosen Linux-native project path.
+- [x] Blender's runtime exposes enough `pxr`/USD information to confirm the host dependency identity needed for Phase 03.
+- [x] If NVIDIA GPU exists, WSL can identify the device/driver and run a minimal CUDA visibility check; failure is recorded without blocking the CPU baseline unless it breaks Blender/WSLg.
+- [x] Build/source/install/cache directories are separated and documented.
+- [x] Reproduction and rollback/start-stop instructions are written.
 
 ## Negative / security cases
 - Do not install a Linux NVIDIA display driver inside WSL; use the Windows NVIDIA driver path documented by NVIDIA.
@@ -76,4 +76,6 @@ Execution state: **prepared, awaiting real-workstation run**. The phase must not
 - Filesystem layout and start/stop commands manually checked.
 
 ## Completion Record
-Populate only when this phase becomes [x].
+Status: COMPLETE — 2026-09-09
+Record: `docs/completions/02-host-runtime-foundation.md`
+Evidence: `docs/evidence/phase02-host-evidence.md`

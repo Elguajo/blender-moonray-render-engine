@@ -1,0 +1,254 @@
+Phase 02 host verification
+2026-09-09T11:20:53+05:00
+
+=== OS / WSL ===
+NAME="Rocky Linux"
+VERSION="9.8 (Blue Onyx)"
+RELEASE_TYPE="stable"
+ID="rocky"
+ID_LIKE="rhel centos fedora"
+VERSION_ID="9.8"
+PLATFORM_ID="platform:el9"
+PRETTY_NAME="Rocky Linux 9.8 (Blue Onyx)"
+ANSI_COLOR="0;32"
+LOGO="fedora-logo-icon"
+CPE_NAME="cpe:/o:rocky:rocky:9::baseos"
+HOME_URL="https://rockylinux.org/"
+VENDOR_NAME="RESF"
+VENDOR_URL="https://resf.org/"
+BUG_REPORT_URL="https://bugs.rockylinux.org/"
+SUPPORT_END="2032-05-31"
+ROCKY_SUPPORT_PRODUCT="Rocky-Linux-9"
+ROCKY_SUPPORT_PRODUCT_VERSION="9.8"
+REDHAT_SUPPORT_PRODUCT="Rocky Linux"
+REDHAT_SUPPORT_PRODUCT_VERSION="9.8"
+Linux DESKTOP-9O2U790 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+WSL_INTEROP=/run/WSL/278_interop
+DISPLAY=:0
+WAYLAND_DISPLAY=wayland-0
+
+[PASS] Running under WSL
+[PASS] Rocky Linux 9.x detected
+[PASS] WSLg/X11 DISPLAY is available: :0
+[PASS] WSL vGPU device /dev/dxg is present
+
+=== CPU / memory / filesystem ===
+Architecture:                         x86_64
+CPU op-mode(s):                       32-bit, 64-bit
+Address sizes:                        46 bits physical, 48 bits virtual
+Byte Order:                           Little Endian
+CPU(s):                               28
+On-line CPU(s) list:                  0-27
+Vendor ID:                            GenuineIntel
+Model name:                           Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz
+CPU family:                           6
+Model:                                79
+Thread(s) per core:                   2
+Core(s) per socket:                   14
+Socket(s):                            1
+Stepping:                             1
+BogoMIPS:                             5187.98
+Flags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon rep_good nopl xtopology cpuid tsc_known_freq pni pclmulqdq vmx ssse3 fma cx16 pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch pti ssbd ibrs ibpb stibp tpr_shadow ept vpid ept_ad fsgsbase bmi1 hle avx2 smep bmi2 erms invpcid rtm rdseed adx smap xsaveopt vnmi md_clear flush_l1d arch_capabilities
+Virtualization:                       VT-x
+Hypervisor vendor:                    Microsoft
+Virtualization type:                  full
+L1d cache:                            448 KiB (14 instances)
+L1i cache:                            448 KiB (14 instances)
+L2 cache:                             3.5 MiB (14 instances)
+L3 cache:                             35 MiB (1 instance)
+NUMA node(s):                         1
+NUMA node0 CPU(s):                    0-27
+Vulnerability Gather data sampling:   Not affected
+Vulnerability Itlb multihit:          KVM: Mitigation: VMX disabled
+Vulnerability L1tf:                   Mitigation; PTE Inversion; VMX conditional cache flushes, SMT vulnerable
+Vulnerability Mds:                    Mitigation; Clear CPU buffers; SMT Host state unknown
+Vulnerability Meltdown:               Mitigation; PTI
+Vulnerability Mmio stale data:        Mitigation; Clear CPU buffers; SMT Host state unknown
+Vulnerability Reg file data sampling: Not affected
+Vulnerability Retbleed:               Not affected
+Vulnerability Spec rstack overflow:   Not affected
+Vulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:             Mitigation; Retpolines; IBPB conditional; IBRS_FW; STIBP conditional; RSB filling; PBRSB-eIBRS Not affected; BHI Retpoline
+Vulnerability Srbds:                  Not affected
+Vulnerability Tsx async abort:        Mitigation; Clear CPU buffers; SMT Host state unknown
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       643Mi        14Gi        11Mi       337Mi        14Gi
+Swap:          4.0Gi          0B       4.0Gi
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdd       1007G  2.7G  953G   1% /
+/dev/sdd       1007G  2.7G  953G   1% /
+[PASS] Build/runtime root is Linux-native: /root/moonray-blender
+
+=== WSLg graphics ===
+name of display: :0
+display: :0  screen: 0
+direct rendering: Yes
+Extended renderer info (GLX_MESA_query_renderer):
+    Vendor: Mesa (0xffffffff)
+    Device: llvmpipe (LLVM 21.1.8, 256 bits) (0xffffffff)
+    Version: 25.2.7
+    Accelerated: no
+    Video memory: 15909MB
+    Unified memory: yes
+    Preferred profile: core (0x1)
+    Max core profile version: 4.5
+    Max compat profile version: 4.5
+    Max GLES1 profile version: 1.1
+    Max GLES[23] profile version: 3.2
+Memory info (GL_ATI_meminfo):
+    VBO free memory - total: 31 MB, largest block: 31 MB
+    VBO free aux. memory - total: 15249 MB, largest block: 15249 MB
+    Texture free memory - total: 31 MB, largest block: 31 MB
+    Texture free aux. memory - total: 15249 MB, largest block: 15249 MB
+    Renderbuffer free memory - total: 31 MB, largest block: 31 MB
+    Renderbuffer free aux. memory - total: 15249 MB, largest block: 15249 MB
+Memory info (GL_NVX_gpu_memory_info):
+    Dedicated video memory: 1904826 MB
+    Total available memory: 1920735 MB
+    Currently available dedicated video memory: 31 MB
+OpenGL vendor string: Mesa
+OpenGL renderer string: llvmpipe (LLVM 21.1.8, 256 bits)
+OpenGL core profile version string: 4.5 (Core Profile) Mesa 25.2.7
+OpenGL core profile shading language version string: 4.50
+OpenGL core profile context flags: (none)
+OpenGL core profile profile mask: core profile
+
+OpenGL version string: 4.5 (Compatibility Profile) Mesa 25.2.7
+OpenGL shading language version string: 4.50
+OpenGL context flags: (none)
+OpenGL profile mask: compatibility profile
+
+OpenGL ES profile version string: OpenGL ES 3.2 Mesa 25.2.7
+OpenGL ES profile shading language version string: OpenGL ES GLSL ES 3.20
+
+==========
+VULKANINFO
+==========
+
+Vulkan Instance Version: 1.4.328
+
+
+Instance Extensions: count = 25
+-------------------------------
+VK_EXT_acquire_drm_display             : extension revision 1
+VK_EXT_acquire_xlib_display            : extension revision 1
+VK_EXT_debug_report                    : extension revision 10
+VK_EXT_debug_utils                     : extension revision 2
+VK_EXT_direct_mode_display             : extension revision 1
+VK_EXT_display_surface_counter         : extension revision 1
+VK_EXT_headless_surface                : extension revision 1
+VK_EXT_layer_settings                  : extension revision 2
+VK_EXT_surface_maintenance1            : extension revision 1
+VK_EXT_swapchain_colorspace            : extension revision 5
+VK_KHR_device_group_creation           : extension revision 1
+VK_KHR_display                         : extension revision 23
+VK_KHR_external_fence_capabilities     : extension revision 1
+VK_KHR_external_memory_capabilities    : extension revision 1
+VK_KHR_external_semaphore_capabilities : extension revision 1
+VK_KHR_get_display_properties2         : extension revision 1
+VK_KHR_get_physical_device_properties2 : extension revision 2
+VK_KHR_get_surface_capabilities2       : extension revision 1
+VK_KHR_portability_enumeration         : extension revision 1
+VK_KHR_surface                         : extension revision 25
+VK_KHR_surface_protected_capabilities  : extension revision 1
+VK_KHR_wayland_surface                 : extension revision 6
+VK_KHR_xcb_surface                     : extension revision 6
+VK_KHR_xlib_surface                    : extension revision 6
+VK_LUNARG_direct_driver_loading        : extension revision 1
+
+Instance Layers: count = 1
+--------------------------
+VK_LAYER_MESA_device_select Linux device selection layer 1.4.303  version 1
+
+Devices:
+========
+GPU0:
+	apiVersion         = 1.4.318
+	driverVersion      = 25.2.7
+	vendorID           = 0x10005
+	deviceID           = 0x0000
+	deviceType         = PHYSICAL_DEVICE_TYPE_CPU
+	deviceName         = llvmpipe (LLVM 21.1.8, 256 bits)
+	driverID           = DRIVER_ID_MESA_LLVMPIPE
+	driverName         = llvmpipe
+	driverInfo         = Mesa 25.2.7 (LLVM 21.1.8)
+	conformanceVersion = 1.3.1.1
+	deviceUUID         = 6d657361-3235-2e32-2e37-000000000000
+	driverUUID         = 6c6c766d-7069-7065-5555-494400000000
+[WARN] OpenGL is software-rendered (llvmpipe (LLVM 21.1.8, 256 bits)); no d3d12 Gallium driver in /usr/lib64/dri
+
+=== NVIDIA / CUDA visibility (non-blocking for CPU baseline) ===
+Wed Sep  9 11:20:57 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 610.57.01              KMD Version: 610.88        CUDA UMD Version: 13.3     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 3060        On  |   00000000:03:00.0  On |                  N/A |
+|  0%   52C    P8             14W /  170W |    1576MiB /  12288MiB |      5%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[PASS] NVIDIA device is visible in WSL
+
+=== Blender binary ===
+Blender 5.2.1 LTS
+	build date: 2026-08-25
+	build time: 02:12:34
+	build commit date: 2026-08-24
+	build commit time: 16:50
+	build hash: 9e2066aef7ef
+	build branch: blender-v5.2-release
+	build platform: Linux
+	build type: Release
+	build c flags:  -Wall -Werror=implicit-function-declaration -Wstrict-prototypes -Werror=return-type -Werror=vla -Wmissing-prototypes -Wno-char-subscripts -Wno-unknown-pragmas -Wpointer-arith -Wunused-parameter -Wwrite-strings -Wlogical-op -Wundef -Winit-self -Wmissing-include-dirs -Wno-div-by-zero -Wtype-limits -Wformat-signedness -Wrestrict -Wno-stringop-overread -Wno-stringop-overflow -Wnonnull -Wabsolute-value -Wuninitialized -Wredundant-decls -Wshadow -Wimplicit-fallthrough=5 -Wno-error=unused-but-set-variable  -march=x86-64-v2 -std=gnu11 -pipe -fPIC -funsigned-char -fno-strict-aliasing -ffp-contract=off  
+	build c++ flags:  -Wuninitialized -Wredundant-decls -Wall -Wno-invalid-offsetof -Wno-sign-compare -Wlogical-op -Winit-self -Wmissing-include-dirs -Wno-div-by-zero -Wtype-limits -Werror=return-type -Wno-char-subscripts -Wno-unknown-pragmas -Wpointer-arith -Wunused-parameter -Wwrite-strings -Wundef -Wcomma-subscript -Wformat-signedness -Wrestrict -Wno-suggest-override -Wuninitialized -Wno-stringop-overread -Wno-stringop-overflow -Wimplicit-fallthrough=5 -Wundef -Wmissing-declarations  -march=x86-64-v2 -pipe -fPIC -funsigned-char -fno-strict-aliasing -ffp-contract=off  
+	build link flags: 
+[PASS] Pinned Blender 5.2.1 detected
+
+=== Blender runtime / bundled Python / USD ===
+BLENDER_VERSION=5.2.1 LTS
+PYTHON=3.13.13 (main, Apr 25 2025, 12:39:20) [GCC 14.2.1 20250110 (Red Hat 14.2.1-11)]
+PLATFORM=Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.34
+PXR_PACKAGE=/root/moonray-blender/tools/blender-5.2.1/5.2/python/lib/python3.13/site-packages/pxr/__init__.py
+USD_VERSION=(0, 26, 3)
+TF_MODULE=/root/moonray-blender/tools/blender-5.2.1/5.2/python/lib/python3.13/site-packages/pxr/Tf/__init__.py
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:12:34)
+
+Blender quit
+[PASS] Blender bundled Python can import pxr/USD
+
+--- Bundled OpenUSD library identity (Phase 03 ABI input) ---
+/root/moonray-blender/tools/blender-5.2.1/lib/libusd_ms.so
+[PASS] Bundled OpenUSD shared libraries located
+
+=== .blend round-trip ===
+Info: Saved as "phase02-roundtrip.blend"
+SAVED=/root/moonray-blender/projects/phase02-smoke/phase02-roundtrip.blend
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:12:34)
+
+Blender quit
+[PASS] Created smoke-test .blend in Linux-native project path
+00:00.578  blend            | Read blend: "/root/moonray-blender/projects/phase02-smoke/phase02-roundtrip.blend"
+ROUNDTRIP_OK=/root/moonray-blender/projects/phase02-smoke/phase02-roundtrip.blend
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:12:34)
+
+Blender quit
+[PASS] Reopened .blend and verified object state
+
+=== Summary ===
+PASS=11
+WARN=1
+FAIL=0
+EVIDENCE=/root/moonray-blender/logs/phase02-host-evidence.txt
+PHASE02_RESULT=PASS

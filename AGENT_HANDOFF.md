@@ -43,4 +43,7 @@ Read:
 6. STOP;
 7. ask user in Russian if the next phase should begin.
 
-Current phase is Phase 02 until real Windows/WSL/Blender evidence passes.
+Phase 02 passed on real hardware (2026-09-09): WSL2 + Rocky Linux 9.8 + Blender 5.2.1 LTS GUI verified
+through WSLg. See `docs/completions/02-host-runtime-foundation.md` and `docs/evidence/phase02-host-evidence.md`.
+
+Current phase is Phase 03 (native MoonRay runtime). It has NOT been started and needs explicit user approval.

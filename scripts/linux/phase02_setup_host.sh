@@ -43,6 +43,7 @@ CORE_PACKAGES=(
   python3 python3-pip
   libX11 libXi libXcursor libXrandr libXinerama libXxf86vm
   libxkbcommon dbus-libs
+  libSM libICE
   mesa-libGL mesa-libEGL mesa-dri-drivers
 )
 
@@ -60,6 +61,16 @@ ${SUDO} dnf -y update
 
 echo "==> Install core host/runtime packages"
 ${SUDO} dnf -y install "${CORE_PACKAGES[@]}"
+
+# ninja-build lives in Rocky's CRB repository, which is disabled by default.
+# Phase 03 builds MoonRay with CMake, so enable CRB here rather than leave a
+# permanently failing optional package behind. Non-blocking by design.
+echo "==> Enable CRB repository (non-blocking)"
+if ${SUDO} dnf -y install dnf-plugins-core && ${SUDO} dnf config-manager --set-enabled crb; then
+  echo "    CRB repository enabled"
+else
+  echo "    WARN: could not enable the CRB repository"
+fi
 
 echo "==> Install optional graphics/diagnostic packages (non-blocking)"
 MISSING_OPTIONAL=()

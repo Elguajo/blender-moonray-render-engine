@@ -2,10 +2,12 @@ param(
     [string]$DistroName = "MoonRay-Rocky9",
     [string]$DownloadDir = "$env:USERPROFILE\Downloads\MoonRayHostBootstrap",
     # WSL stores the distro ext4 VHDX here. Phase 03 builds MoonRay, so this
-    # defaults to a large data volume instead of %LOCALAPPDATA% on C:.
+    # defaults to a large data volume instead of %LOCALAPPDATA% on C:, and it
+    # sits beside the repository rather than inside it so that archiving or
+    # copying the project never drags a multi-hundred-GB VHDX along.
     # The filesystem inside the VHDX is still Linux-native ext4; this is NOT a
     # /mnt/c build tree and does not violate the Phase 02 filesystem rule.
-    [string]$DistroLocation = "D:\WSL\MoonRay-Rocky9"
+    [string]$DistroLocation = "D:\01_DEV\moonray-blender-wsl\MoonRay-Rocky9"
 )
 
 $ErrorActionPreference = "Stop"
@@ -155,6 +157,22 @@ if (-not $line) {
 if ($line -notmatch '\s2\s*$') {
     Write-Host "Converting $DistroName to WSL2..."
     Invoke-Wsl @('--set-version',$DistroName,'2') | Write-Host
+}
+
+Write-Step "Record distro VHDX location"
+$basePathKey = Get-ChildItem "HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss" -ErrorAction SilentlyContinue |
+    Where-Object { (Get-ItemProperty $_.PSPath -ErrorAction SilentlyContinue).DistributionName -eq $DistroName } |
+    Select-Object -First 1
+if ($basePathKey) {
+    $actualBase = (Get-ItemProperty $basePathKey.PSPath).BasePath -replace '^\\\\\?\\', ''
+    "Distro VHDX location (actual): $actualBase" | Tee-Object -FilePath $log -Append | Write-Host
+    if ($actualBase -ne $DistroLocation) {
+        "NOTE: distro is not at the requested location '$DistroLocation'. Move it with: wsl --manage $DistroName --move `"$DistroLocation`"" |
+            Tee-Object -FilePath $log -Append | Write-Host
+    }
+} else {
+    "WARN: could not resolve the VHDX location for $DistroName from the registry." |
+        Tee-Object -FilePath $log -Append | Write-Host
 }
 
 Write-Step "Capture Rocky basics"

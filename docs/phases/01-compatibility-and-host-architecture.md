@@ -10,7 +10,7 @@ The user explicitly accepted WSL2 as the execution boundary. Research then valid
 - `docs/project/PROJECT_BRIEF.md`
 - `docs/project/ARCHITECTURE.md`
 - `docs/research/01-compatibility-matrix.md`
-- `docs/decisions/ADR-0001-wsl2-linux-blender-hydra-host.md`
+- `docs/decisions/ADR-0001-wsl2-linux-host-boundary.md`
 
 ## In scope
 - Verify current Blender 5.2+ Hydra/OpenUSD integration details.
@@ -35,7 +35,7 @@ The user explicitly accepted WSL2 as the execution boundary. Research then valid
 - [x] Evaluate architecture options against must-have workflow.
   - Result: WSL2/WSLg Linux Blender selected; dedicated Linux retained as platform fallback; batch USD retained diagnostic-only.
 - [x] Record consequential decision as ADR.
-  - Result: `docs/decisions/ADR-0001-wsl2-linux-blender-hydra-host.md` accepted.
+  - Result: `docs/decisions/ADR-0001-wsl2-linux-host-boundary.md` accepted.
 - [x] Update Architecture with selected path and fallback.
   - Result: architecture now pins the WSL2 boundary, Blender 5.2.1 baseline, Blender-host USD contract, hdm_10 candidate and CPU-first rollout.
 
