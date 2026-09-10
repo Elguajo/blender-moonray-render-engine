@@ -1,14 +1,16 @@
-"""MoonRay bpy.types.RenderEngine integration (Phase 05).
+"""MoonRay bpy.types.RenderEngine integration (Phase 05, extended Phase 06).
 
-Scope (docs/phases/05-blender-renderengine-integration.md): register the
-engine, launch/version-check the bridge, translate the one supported baseline
-scene, run one final (F12) render through the Direct Bridge, and copy the
-result into Blender's Render Result -- no Rendered Viewport (Phase 08), no
-general material/geometry translation (Phase 06/07).
+Phase 05 scope: register the engine, launch/version-check the bridge, run one
+final (F12) render through the Direct Bridge, copy the result into Blender's
+Render Result -- no Rendered Viewport (Phase 08). Phase 06 replaced the
+one-mesh/one-light baseline translator (`scene_writer.py`, now removed) with
+the general `scene_translator.py` (any number of meshes/lights, camera unit
+mapping, native Blender light-type mapping) over the structured bridge
+protocol (docs/bridge/SCENE_TRANSLATION.md, ADR-0005) -- no material/texture
+translation yet (Phase 07).
 """
 from __future__ import annotations
 
-import os
 import shutil
 import tempfile
 
@@ -16,7 +18,7 @@ import bpy
 
 from . import bridge_client
 from . import bridge_launcher
-from . import scene_writer
+from . import scene_translator
 
 
 class MoonRayRenderEngine(bpy.types.RenderEngine):
@@ -40,23 +42,16 @@ class MoonRayRenderEngine(bpy.types.RenderEngine):
                 cancelled = True
                 return
 
-            rdla_path = os.path.join(run_dir, "scene.rdla")
-            scene_writer.write_scene(
-                depsgraph, rdla_path,
-                image_width=width, image_height=height, pixel_samples=pixel_samples,
-            )
-
-            if self.test_break():
-                cancelled = True
-                return
-
             handle = bridge_launcher.launch_and_connect(bridge_bin=bridge_bin, log_dir=run_dir)
             try:
                 if self.test_break():
                     cancelled = True
                     return
 
-                handle.client.create_scene(rdla_path)
+                scene_translator.write_via_bridge(
+                    handle.client, depsgraph,
+                    image_width=width, image_height=height, pixel_samples=pixel_samples,
+                )
 
                 if self.test_break():
                     cancelled = True
@@ -77,7 +72,7 @@ class MoonRayRenderEngine(bpy.types.RenderEngine):
                 self._write_result(result, reply["payload"])
             finally:
                 handle.shutdown()
-        except scene_writer.SceneTranslationError as exc:
+        except scene_translator.SceneTranslationError as exc:
             self.report({'ERROR'}, f"MoonRay: scene not supported: {exc}")
             self.error_set(str(exc))
         except bridge_launcher.BridgeLaunchError as exc:

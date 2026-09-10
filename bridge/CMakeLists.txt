@@ -21,6 +21,7 @@ add_executable(moonray_bridge
     src/Protocol.cpp
     src/PosixSocketServer.cpp
     src/RenderSession.cpp
+    src/SceneBuilder.cpp
     src/SharedMemoryBuffer.cpp
 )
 

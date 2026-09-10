@@ -1,4 +1,5 @@
 #include "RenderSession.h"
+#include "SceneBuilder.h"
 #include "SharedMemoryBuffer.h"
 
 #include <moonray/rendering/rndr/RenderContext.h>
@@ -6,15 +7,32 @@
 #include <moonray/rendering/rndr/Types.h>
 #include <scene_rdl2/common/fb_util/FbTypes.h>
 #include <scene_rdl2/common/math/Vec4.h>
-
-#include <sys/stat.h>
-#include <unistd.h>
+#include <scene_rdl2/scene/rdl2/SceneContext.h>
 
 #include <chrono>
 #include <sstream>
 #include <thread>
 
 namespace moonray_bridge {
+
+namespace {
+
+// Maps the two SceneBuilder validation exception types onto RenderSession's
+// own (which BridgeServer/main.cpp already classifies into ERROR_MODEL
+// categories 1/2) so callers only need to catch RenderSession's types.
+template <typename Fn>
+Json::Value runSceneBuilderCall(Fn&& fn)
+{
+    try {
+        return fn();
+    } catch (const SceneBuilderValidationError& e) {
+        throw SessionValidationError(e.what());
+    } catch (const SceneBuilderUnsupportedError& e) {
+        throw UnsupportedFeatureError(e.what());
+    }
+}
+
+} // namespace
 
 RenderSession::RenderSession(moonray::rndr::RenderOptions& options) : mOptions(options) {}
 
@@ -24,40 +42,67 @@ RenderSession::~RenderSession()
     unlinkSharedMemory(mLastShmName);
 }
 
-Json::Value RenderSession::createScene(const std::string& rdlaPath)
+Json::Value RenderSession::createScene(const Json::Value& sceneVariables)
 {
-    if (rdlaPath.empty()) {
-        throw SessionValidationError("CREATE_SCENE payload field 'rdla_path' must be a non-empty string");
-    }
-    struct stat st{};
-    if (stat(rdlaPath.c_str(), &st) != 0) {
-        throw SessionValidationError("rdla_path does not exist or is not accessible: " + rdlaPath);
-    }
-    if (!S_ISREG(st.st_mode)) {
-        throw SessionValidationError("rdla_path is not a regular file: " + rdlaPath);
-    }
-    if (access(rdlaPath.c_str(), R_OK) != 0) {
-        throw SessionValidationError("rdla_path is not readable: " + rdlaPath);
-    }
-
     // Drop any previous scene before constructing the new one so a failed
     // CREATE_SCENE never leaves a half-replaced session (LIFECYCLE.md: applied
     // only when the renderer's lifecycle permits it). mOptions itself is the
     // single process-wide instance initGlobalDriver() was called with (see
-    // RenderSession.h) -- only its scene-file list is mutated, matching the
-    // CLI's own reuse of one RenderOptions across renders.
+    // RenderSession.h); Phase 06 no longer sets a scene-file list at all --
+    // the RenderContext's SceneContext is built directly via SceneBuilder
+    // (RenderContext::loadScene() is a no-op over an empty scene-file list,
+    // confirmed against the pinned moonray source: it just sets mSceneLoaded
+    // and leaves whatever SceneContext state already exists untouched).
     mRenderContext.reset();
-    mOptions.setSceneFiles(std::vector<std::string>{rdlaPath});
+    mOptions.setSceneFiles(std::vector<std::string>{});
+    mInitialized = false;
+    mHasCamera = false;
 
     std::stringstream initMessages;
     auto ctx = std::make_unique<moonray::rndr::RenderContext>(mOptions, &initMessages);
-    ctx->initialize(initMessages, moonray::rndr::RenderContext::LoggingConfiguration::ATHENA_DISABLED);
+    runSceneBuilderCall([&] {
+        buildSceneScaffold(ctx->getSceneContext(), sceneVariables);
+        return Json::Value();
+    });
     mRenderContext = std::move(ctx);
 
     Json::Value result(Json::objectValue);
     result["ok"] = true;
-    result["rdla_path"] = rdlaPath;
-    result["init_messages"] = initMessages.str();
+    return result;
+}
+
+Json::Value RenderSession::updateObject(const Json::Value& payload)
+{
+    if (!mRenderContext) {
+        throw SessionValidationError("UPDATE_OBJECT received with no scene created (send CREATE_SCENE first)");
+    }
+    runSceneBuilderCall([&] {
+        applyObjectUpdate(mRenderContext->getSceneContext(), payload);
+        return Json::Value();
+    });
+    if (mInitialized) {
+        mRenderContext->setSceneUpdated();
+    }
+    Json::Value result(Json::objectValue);
+    result["ok"] = true;
+    return result;
+}
+
+Json::Value RenderSession::updateCamera(const Json::Value& payload)
+{
+    if (!mRenderContext) {
+        throw SessionValidationError("UPDATE_CAMERA received with no scene created (send CREATE_SCENE first)");
+    }
+    runSceneBuilderCall([&] {
+        applyCameraUpdate(mRenderContext->getSceneContext(), payload);
+        return Json::Value();
+    });
+    mHasCamera = true;
+    if (mInitialized) {
+        mRenderContext->setSceneUpdated();
+    }
+    Json::Value result(Json::objectValue);
+    result["ok"] = true;
     return result;
 }
 
@@ -66,9 +111,18 @@ Json::Value RenderSession::startRender(const std::string& renderMode)
     if (!mRenderContext) {
         throw SessionValidationError("START_RENDER received with no scene created (send CREATE_SCENE first)");
     }
+    if (!mHasCamera) {
+        throw SessionValidationError("START_RENDER received with no camera created (send UPDATE_CAMERA first)");
+    }
     if (renderMode != "final") {
         // Progressive viewport / animation render modes are Phase 08/09 scope.
         throw UnsupportedFeatureError("render_mode '" + renderMode + "' is not implemented in Phase 04 (only 'final' is)");
+    }
+
+    if (!mInitialized) {
+        std::stringstream initMessages;
+        mRenderContext->initialize(initMessages, moonray::rndr::RenderContext::LoggingConfiguration::ATHENA_DISABLED);
+        mInitialized = true;
     }
 
     const auto start = std::chrono::steady_clock::now();

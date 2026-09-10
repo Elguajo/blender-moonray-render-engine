@@ -131,18 +131,46 @@ Attribute names confirmed from `dso/camera/PerspectiveCamera/attributes.cc` and 
   `bokeh_weight_location`/`bokeh_weight_strength`, `stereo_view`,
   `stereo_interocular_distance`, `stereo_convergence_distance`.
 
-Exact Blender-field-to-RDL2-attribute unit/convention mapping (e.g. `lens` mm vs. `focal`,
-sensor-fit vs. `film_width_aperture`) is still **Open — Phase 06**, since it requires
-render-fixture verification, not just attribute-name matching.
+**Implemented — Phase 06** (`addon/scene_translator.py::_extract_camera`): `focal` ←
+`lens`; `film_width_aperture` ← `sensor_width`; `near`/`far` ← `clip_start`/`clip_end`;
+`pixel_aspect_ratio` ← `scene.render.pixel_aspect_y / pixel_aspect_x` (inverted, per the
+table above); `horizontal_film_offset`/`vertical_film_offset` ← `shift_x`/`shift_y *
+sensor_width`; `dof`/`dof_aperture`/`dof_focus_distance` ← `use_dof`/`lens / f-stop`/
+`focus_distance` (or distance-to-`focus_object`). **Camera framing itself was verified by
+observation** (a real Blender-driven render, `docs/evidence/phase06/`, showed the expected
+objects in frame at plausible positions) but the exact unit/scale of `film_offset` and
+`dof_aperture` was **not** render-fixture-verified against a known-correct reference image —
+treat those two as plausible, not confirmed, if precise framing/DoF matching matters.
 
 ## Lights
 ```text
 Blender Light object (type: POINT / SUN / SPOT / AREA)
 → RDL2 Light subclass
-  - node_xform          ← matrix_world
+  - node_xform          ← matrix_world, via light_xform_to_rdl2_mat4()
+                           (NOT the same helper meshes/camera use --
+                           see "Light orientation" note below)
   - color / intensity / exposure / camera-visibility / shadowing
     (common to every rdl2::Light per shaders/lights.md)
 ```
+
+**Light orientation — root-caused and fixed in Phase 06**
+(`docs/evidence/phase06/light-orientation-fix/`): every one of
+`DistantLight`/`SpotLight`/`RectLight`/`DiskLight`/`SphereLight`'s `update()` composes
+`node_xform` with a built-in 180-degree rotation about local X ("for consistency with
+DiskLight", source's own comment), so the naive "`node_xform`'s local Z = intended
+direction" construction Phase 05 used illuminates the mirror image about local X instead.
+This was the actual cause of Phase 05's un-root-caused SphereLight/DistantLight anomaly for
+every *orientation-dependent* light (DistantLight direction, SpotLight cone axis,
+RectLight/DiskLight face normal) — confirmed against source and empirically (two independent
+hand-built scenes through the unmodified Phase 04 bridge, axis-aligned and tilted, both went
+from flat black to correctly lit once corrected). **Not a MoonRay defect** — no upstream
+report warranted. `addon/scene_translator.py::light_xform_to_rdl2_mat4()` applies the fix;
+Phase 05's axis-snap workaround is removed. Only `DistantLight` was independently
+re-rendered end-to-end (both cases); `SpotLight`/`RectLight`/`DiskLight` get the identical
+source-verified correction but were not independently re-rendered. `SphereLight`'s original
+Phase 05 failure (with Blender-derived data) was not reproduced by a fresh, straightforward
+control case and remains unexplained if it resurfaces — see the evidence README's "What
+remains open".
 **Confirmed** against `moonray` source at the pinned commit (`eef67ae9...`): `dso/light/`
 ships nine built-ins — `SphereLight`, `DiskLight`, `DistantLight`, `SpotLight`, `RectLight`,
 `CylinderLight`, `EnvLight`, `MeshLight`, `PortalLight` — each sharing the common
@@ -163,14 +191,23 @@ confirmed class-specific attributes (from each DSO's `attributes.cc`):
 
 This table **replaces the earlier "class list unconfirmed" caveat** — the class names and
 attributes above are read directly from source, not inferred from the plugin-authoring
-guide. What remains **Open — Phase 06** is the actual mapping *decision* and its
-render-fixture verification, in particular:
-- Blender's `AREA` light has a fourth shape, `ELLIPSE`, with no matching RDL2 primitive —
-  must fail/fall back explicitly rather than silently substitute `DiskLight`/`RectLight`.
-- Unit/value-scale conversion per attribute (e.g. Blender's radiometric power vs. RDL2
-  `intensity`/`exposure`/`normalized`).
-- Whether `CylinderLight`/`PortalLight` are exposed at all in the first supported set, since
-  Blender has no built-in light type that maps onto them directly.
+guide.
+
+**Decided and implemented — Phase 06** (decision B, native-type mapping;
+`addon/scene_translator.py::_extract_light`): `POINT → SphereLight`, `SUN → DistantLight`,
+`SPOT → SpotLight`, `AREA(SQUARE/RECTANGLE) → RectLight`, `AREA(DISK) → DiskLight`. Blender's
+own `light.type`/`light.shape` are read directly (not replaced by a MoonRay-native enum, per
+decision B's rationale: keeps scenes portable to Cycles/EEVEE, unlike `cjhosken/mfb`'s
+approach, §3.3 of `docs/research/05-prior-art-harvest.md`). `AREA` with `shape = 'ELLIPSE'`
+raises `SceneTranslationError` before any bridge call — confirmed by construction (explicit
+check in `_extract_light`), not yet exercised by a render fixture with an actual ellipse
+light. `CylinderLight`/`PortalLight`/`MeshLight`/`EnvLight` remain unmapped (no direct
+Blender source for the first two; `MeshLight`/`EnvLight` are plausible future targets for
+emissive materials/world background, out of Phase 06 scope). Unit/value-scale conversion
+(Blender radiometric power → RDL2 `intensity`) uses documented pragmatic approximations
+(`scene_translator.py`'s per-type comments), **not** verified against a photometrically
+correct reference — SCENE_TRANSLATION.md's original "Open" note on this point still stands;
+only "renders predictably, not identically to Cycles" is claimed.
 
 Unsupported light types must fail/fall back explicitly, never silently mis-render
 (`docs/phases/06-geometry-camera-lights.md` acceptance criteria).
@@ -253,23 +290,45 @@ Blender depsgraph change (add / modify / remove)
 → RDL2 attribute update inside beginUpdate()/endUpdate(), or SceneObject removal
 → applied only when MoonRay's render lifecycle permits (see LIFECYCLE.md)
 ```
-RDL2 supports delta-only serialization (`writeSceneToFile(..., deltaEncoding=true)` writes
-only attributes changed since the last `commitAllChanges()`) — this is the mechanism Arras
-clients use for incremental sends and is the natural basis for bridge incremental updates,
-but the bridge's own wire-level update protocol is **Open — Phase 06.**
+**Decided and implemented — Phase 06** (ADR-0005): the bridge's wire-level protocol is the
+structured `UPDATE_OBJECT` message with an explicit `op` field (`create`/`update`/`delete`),
+not RDL2's own delta-serialization mechanism (that stays an internal RDL2/Arras concern, not
+exposed on the wire). `delete` removes the object from its `GeometrySet`/`LightSet` (and is
+idempotent if the object is already absent) rather than calling `SceneContext::deleteSceneObject()`
+outright — that stronger operation additionally requires proving no remaining `Layer`
+assignment, and `Layer.h` exposes no `unassign()` at this pin, so full object destruction is
+deliberately deferred (`bridge/src/SceneBuilder.cpp::applyMeshUpdate`).
+
+**Confirmed working, with one real limitation found:** `bridge/tests/run_phase06_tests.py`
+verifies, against the real bridge + MoonRay: (a) `update` (an attribute change, e.g. moving
+an already-rendered mesh) correctly takes effect on the *next* render within the same live
+session; (b) `delete` correctly removes an object *before* the first render of a session. It
+does **not** confirm delete after a render has already happened in the same session —
+tried and observed to NOT reliably remove the geometry from a second render:
+`RenderContext::startFrame()`'s `mSceneUpdated` path uses `rt::ChangeFlag::UPDATE` (not
+`ALL`), and `GeometryManager`'s `UPDATE` path is additive/refresh-oriented, not proven to
+shrink an already-built BVH when a `GeometrySet` member is removed. Not a blocker for Phase 06
+itself (the add-on launches one fresh bridge process per render, per
+`docs/bridge/LIFECYCLE.md` and `addon/bridge_launcher.py`'s one-shot-process lifecycle
+decision, so this case is never hit today) — but a real, open problem for **Phase 08's**
+incremental viewport to solve before mid-session object deletion can be trusted (likely
+needs forcing `ChangeFlag::ALL` on any delete, or another `RenderContext` mechanism not yet
+identified).
 
 ## Decided vs. open summary
 | Mapping | Status |
 |---|---|
 | RDL2 `SceneContext`/`SceneObject`/`SceneClass`/`Attribute` as the target data model | **Decided** (RDL2 API, not a project choice) |
 | `node_xform` carries world transform for every `Node` subclass | **Decided** (RDL2 API) |
-| Mesh target class is `RdlMeshGeometry` | **Confirmed** (source-checked); bridge message layout **Open — Phase 04/06** |
-| Every rendered `Geometry` must be added to a `GeometrySet`, not just the `Layer` | **Confirmed** (source-checked, `GeometryManager.cc` — see "Mesh geometry" above) |
+| Mesh target class is `RdlMeshGeometry` | **Confirmed and implemented — Phase 06** (`bridge/src/SceneBuilder.cpp`) |
+| Every rendered `Geometry` must be added to a `GeometrySet`, not just the `Layer` | **Confirmed** (source-checked, `GeometryManager.cc`) and **implemented — Phase 06** |
 | Camera/light built-in class names + confirmed attribute lists | **Confirmed** (source-checked) |
-| Blender light type → specific RDL2 light class | **Proposed** (table above); render-fixture verification **Open — Phase 06** |
-| Camera field unit/convention mapping (lens↔focal, sensor fit, etc.) | **Open — Phase 06** |
+| Blender light type → specific RDL2 light class | **Decided and implemented — Phase 06** (decision B, native-type mapping; `ELLIPSE` fails explicitly) |
+| Light orientation (`node_xform` → actual illumination direction) | **Root-caused and fixed — Phase 06** (`docs/evidence/phase06/light-orientation-fix/`); `DistantLight` independently re-verified, Spot/Rect/Disk share the fix by construction only |
+| Camera field unit/convention mapping (lens↔focal, sensor fit, etc.) | **Implemented — Phase 06**; framing verified by observation, exact `film_offset`/`dof_aperture` scale not fixture-verified |
+| Structured `CREATE_SCENE`/`UPDATE_OBJECT`/`UPDATE_CAMERA` wire schema | **Decided and implemented — Phase 06** (ADR-0005), replacing the Phase 04/05 raw `.rdla`-path `CREATE_SCENE`; `protocol_version` 1→2 |
+| Wire-level update/delete semantics | **Implemented and confirmed for the cases Phase 06 needs — Phase 06**; mid-session delete-after-render is a known, open limitation for Phase 08 (see above) |
 | `DwaBaseMaterial` vs. `UsdPreviewSurface` as the Principled BSDF target | **Confirmed both exist** (source-checked); **choice is Open — Phase 07** |
 | Principled BSDF → chosen material class's exact attribute mapping | **Open — Phase 07** |
 | Supported-node matrix (materials) | **Open — Phase 07**, mandatory before claiming support |
 | Instancing: native vs. expanded | **Open — Phase 07** |
-| Incremental update wire protocol | **Open — Phase 06** |

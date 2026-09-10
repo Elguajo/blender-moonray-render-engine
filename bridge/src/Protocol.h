@@ -13,8 +13,12 @@ namespace moonray_bridge {
 
 // docs/bridge/MESSAGE_SCHEMA.md "Versioning rule": a single monotonically increasing
 // integer identifying the envelope shape and message-type semantics, bumped only on
-// a breaking change. Phase 04 ships exactly one version; no negotiation range yet.
-constexpr int kProtocolVersion = 1;
+// a breaking change. Bumped 1 -> 2 in Phase 06: CREATE_SCENE's payload changed from
+// an `rdla_path` file reference to a structured `scene_variables` object, and
+// UPDATE_OBJECT/UPDATE_CAMERA went from "recognized but unimplemented" to real
+// message types with their own required payload shape (see SceneBuilder.h,
+// docs/decisions/ADR-0005-structured-scene-protocol.md). No negotiation range yet.
+constexpr int kProtocolVersion = 2;
 
 // Defensive cap on a single control-plane message body, enforced before any
 // allocation/parse is attempted (ERROR_MODEL.md category 1: untrusted input).

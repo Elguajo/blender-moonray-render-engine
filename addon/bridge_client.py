@@ -22,7 +22,7 @@ import struct
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-PROTOCOL_VERSION = 1
+PROTOCOL_VERSION = 2
 MAX_MESSAGE_BYTES = 16 * 1024 * 1024
 
 
@@ -130,8 +130,14 @@ class BridgeClient:
     def capabilities(self) -> dict:
         return self.request("CAPABILITIES")
 
-    def create_scene(self, rdla_path: str) -> dict:
-        return self.request("CREATE_SCENE", {"rdla_path": rdla_path})
+    def create_scene(self, scene_variables: Optional[dict] = None) -> dict:
+        return self.request("CREATE_SCENE", {"scene_variables": scene_variables or {}})
+
+    def update_object(self, payload: dict) -> dict:
+        return self.request("UPDATE_OBJECT", payload)
+
+    def update_camera(self, payload: dict) -> dict:
+        return self.request("UPDATE_CAMERA", payload)
 
     def start_render(self, render_mode: str = "final") -> dict:
         return self.request("START_RENDER", {"render_mode": render_mode})

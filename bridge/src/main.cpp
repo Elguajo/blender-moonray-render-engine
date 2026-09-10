@@ -1,12 +1,15 @@
-// moonray_bridge: Phase 04 prototype native process.
-// docs/phases/04-direct-bridge-prototype.md / docs/bridge/PROTOCOL.md.
+// moonray_bridge: native bridge process.
+// docs/phases/04-direct-bridge-prototype.md / docs/phases/06-geometry-camera-lights.md
+// / docs/bridge/PROTOCOL.md.
 //
 // Single-threaded: accepts one client connection at a time, requires a
 // successful HELLO handshake before any other message, then dispatches
-// CREATE_SCENE / START_RENDER against one RenderSession per connection.
-// STOP_RENDER / UPDATE_OBJECT / UPDATE_CAMERA / UPDATE_MATERIAL / FRAME_UPDATE
-// are recognized (fixed enum, MESSAGE_SCHEMA.md) but explicitly unimplemented
-// in this phase (ERROR category 2), never silently ignored.
+// CREATE_SCENE / UPDATE_OBJECT / UPDATE_CAMERA / START_RENDER against one
+// RenderSession per connection (Phase 06: structured scene schema, see
+// SceneBuilder.h/ADR-0005 -- replaces Phase 04/05's raw .rdla-path
+// CREATE_SCENE). STOP_RENDER / UPDATE_MATERIAL / FRAME_UPDATE are recognized
+// (fixed enum, MESSAGE_SCHEMA.md) but explicitly unimplemented so far (ERROR
+// category 2), never silently ignored.
 #include "PosixSocketServer.h"
 #include "Protocol.h"
 #include "RenderSession.h"
@@ -173,14 +176,34 @@ void handleConnection(moonray_bridge::Connection& conn, moonray::rndr::RenderOpt
                 break;
             }
             case MessageType::CREATE_SCENE: {
-                const std::string rdlaPath = env.payload.get("rdla_path", "").asString();
-                const Json::Value ack = session.createScene(rdlaPath);
+                const Json::Value sceneVariables = env.payload.get("scene_variables", Json::Value(Json::objectValue));
+                const Json::Value ack = session.createScene(sceneVariables);
                 Envelope reply;
                 reply.type = MessageType::CREATE_SCENE;
                 reply.id = env.id;
                 reply.payload = ack;
                 conn.writeFrame(encodeEnvelope(reply));
-                logLine("CREATE_SCENE ok: " + rdlaPath);
+                logLine("CREATE_SCENE ok");
+                break;
+            }
+            case MessageType::UPDATE_OBJECT: {
+                const Json::Value ack = session.updateObject(env.payload);
+                Envelope reply;
+                reply.type = MessageType::UPDATE_OBJECT;
+                reply.id = env.id;
+                reply.payload = ack;
+                conn.writeFrame(encodeEnvelope(reply));
+                logLine("UPDATE_OBJECT ok: " + env.payload.get("name", "").asString());
+                break;
+            }
+            case MessageType::UPDATE_CAMERA: {
+                const Json::Value ack = session.updateCamera(env.payload);
+                Envelope reply;
+                reply.type = MessageType::UPDATE_CAMERA;
+                reply.id = env.id;
+                reply.payload = ack;
+                conn.writeFrame(encodeEnvelope(reply));
+                logLine("UPDATE_CAMERA ok: " + env.payload.get("name", "").asString());
                 break;
             }
             case MessageType::START_RENDER: {
@@ -195,11 +218,9 @@ void handleConnection(moonray_bridge::Connection& conn, moonray::rndr::RenderOpt
                 break;
             }
             case MessageType::STOP_RENDER:
-            case MessageType::UPDATE_OBJECT:
-            case MessageType::UPDATE_CAMERA:
             case MessageType::UPDATE_MATERIAL: {
-                ErrorInfo err{2, "NOT_IMPLEMENTED_PHASE04",
-                              std::string(messageTypeToString(env.type)) + " is not implemented by this Phase 04 prototype"};
+                ErrorInfo err{2, "NOT_IMPLEMENTED_PHASE06",
+                              std::string(messageTypeToString(env.type)) + " is not implemented yet (UPDATE_MATERIAL is Phase 07 scope; STOP_RENDER is Phase 08 scope)"};
                 conn.writeFrame(encodeError(env.id, err));
                 break;
             }

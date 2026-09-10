@@ -1,10 +1,11 @@
 # Bridge Protocol — Overview
 
-Status: **Phase 04 prototype implemented and evidenced** — see
-`docs/completions/04-direct-bridge-prototype.md` and `docs/evidence/phase04/`. This
-directory formalizes the contract sketched in
+Status: **Phase 04 prototype implemented and evidenced; Phase 06 extended it to the
+structured scene protocol** — see `docs/completions/04-direct-bridge-prototype.md` +
+`docs/evidence/phase04/` and `docs/completions/06-geometry-camera-lights.md` +
+`docs/evidence/phase06/`. This directory formalizes the contract sketched in
 [`docs/design/DIRECT_BRIDGE_TARGET.md`](../design/DIRECT_BRIDGE_TARGET.md); items still
-marked "Open" below remain target design until a later phase (06/07/08/09/11) implements
+marked "Open" below remain target design until a later phase (07/08/09/11) implements
 and evidences them. Where this document and `docs/project/ARCHITECTURE.md` disagree,
 ARCHITECTURE.md wins.
 
@@ -50,7 +51,7 @@ Viewport              bulk data    progressive framebuffer/AOVs
 | Exact wire format / serialization technology | **Decided — Phase 04.** JSON envelope (via JsonCpp — already a transitive third-party dependency of the pinned MoonRay/scene_rdl2 build, not a new one added by preference), 4-byte little-endian length-prefixed framing. See `docs/evidence/phase04/`. |
 | Exact IPC mechanism | **Decided — Phase 04.** Unix domain socket (`AF_UNIX`, `SOCK_STREAM`), filesystem path, one client connection at a time. |
 | Message envelope, fixed message-type enum, `protocol_version` handshake | **Decided (shape) — see [MESSAGE_SCHEMA.md](MESSAGE_SCHEMA.md).** Wire encoding of that same contract stays Open — Phase 04. |
-| Full-scene sync vs. incremental sync as the first milestone | **Decided for M0** — full-scene sync acceptable for first F12; incremental becomes mandatory before viewport production acceptance (DIRECT_BRIDGE_TARGET.md rule 6). Exact incremental-update wire semantics are **Open — Phase 06**. |
+| Full-scene sync vs. incremental sync as the first milestone | **Decided for M0** — full-scene sync acceptable for first F12; incremental becomes mandatory before viewport production acceptance (DIRECT_BRIDGE_TARGET.md rule 6). Incremental-update wire semantics (`UPDATE_OBJECT`'s `op` field) are **decided and implemented — Phase 06**, confirmed for create/update and for delete-before-first-render; mid-session delete-after-render is a known open limitation for Phase 08 (see SCENE_TRANSLATION.md "Update / delete semantics"). The add-on itself still only ever sends `create` (one fresh bridge process per render, `addon/bridge_launcher.py`) — real incremental depsgraph diffing is Phase 08 scope. |
 
 ## Non-goals (current contract)
 - Distributed/network rendering (Arras) — out of scope per Phase 04/11.

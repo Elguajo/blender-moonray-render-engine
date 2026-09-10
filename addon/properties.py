@@ -8,7 +8,7 @@ class MoonRaySettings(bpy.types.PropertyGroup):
         name="Bridge Binary",
         description=(
             "Path to the moonray_bridge executable. Leave empty to use the "
-            "Phase 04 build default (scripts/linux/phase04_build_bridge.sh)"
+            "Phase 06 build default (scripts/linux/phase06_build_bridge.sh)"
         ),
         subtype='FILE_PATH',
         default="",

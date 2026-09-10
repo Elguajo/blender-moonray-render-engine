@@ -1,0 +1,43 @@
+SceneVariables {
+    ["camera"] = PerspectiveCamera("cam"),
+    ["image_width"] = 64,
+    ["image_height"] = 64,
+    ["pixel_samples"] = 8,
+}
+
+RdlMeshGeometry("cube") {
+    ["vertices_by_index"] = {1,2,6, 1,6,5, 0,4,7, 0,7,3, 3,7,6, 3,6,2, 0,1,5, 0,5,4, 4,5,6, 4,6,7, 0,3,2, 0,2,1},
+    ["vertex_list_0"] = {Vec3(-1,-1,-1), Vec3(1,-1,-1), Vec3(1,1,-1), Vec3(-1,1,-1), Vec3(-1,-1,1), Vec3(1,-1,1), Vec3(1,1,1), Vec3(-1,1,1)},
+    ["face_vertex_count"] = {3,3,3,3,3,3,3,3,3,3,3,3},
+    ["is_subd"] = false,
+}
+
+GeometrySet("geometrySet") {
+    RdlMeshGeometry("cube"),
+}
+
+Layer("defaultLayer") {
+    {RdlMeshGeometry("cube"), "", DwaBaseMaterial("material"), LightSet("lightSet"), undef(), undef(), undef(), undef()},
+}
+
+DwaBaseMaterial("material") {
+}
+
+SphereLight("sun") {
+    ["node_xform"] = Mat4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,5,0,1),
+    ["color"] = Rgb(1,1,1),
+    ["intensity"] = 20.0,
+    ["radius"] = 1.0,
+}
+
+LightSet("lightSet") {
+    SphereLight("sun"),
+}
+
+PerspectiveCamera("cam") {
+    ["node_xform"] = Mat4(1,0,0,0, 0,0,1,0, 0,1,0,0, 0,3,0,1),
+    ["near"] = 0.1,
+    ["far"] = 100.0,
+    ["focal"] = 30.0,
+    ["film_width_aperture"] = 24.0,
+}

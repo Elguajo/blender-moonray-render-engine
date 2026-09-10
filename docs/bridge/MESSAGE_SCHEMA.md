@@ -108,9 +108,9 @@ add-on                                    moonray_bridge
 |---|---|---|---|
 | `HELLO` | bidirectional, first on connection | own request/response | Decided: `protocol_version`, opaque `client_info`/`bridge_info` string |
 | `CAPABILITIES` | bidirectional, after `HELLO` | own request/response | Open — flag vocabulary grows per phase (see above) |
-| `CREATE_SCENE` | add-on → bridge | request → ack/`ERROR` | Open — Phase 04/06, see [SCENE_TRANSLATION.md](SCENE_TRANSLATION.md) |
-| `UPDATE_OBJECT` | add-on → bridge | request → ack/`ERROR` | Open — Phase 04/06 (geometry/transform/light; camera and material split out below) |
-| `UPDATE_CAMERA` | add-on → bridge | request → ack/`ERROR` | Open — Phase 06, see SCENE_TRANSLATION.md "Camera" |
+| `CREATE_SCENE` | add-on → bridge | request → ack/`ERROR` | **Decided and implemented — Phase 06**: `payload.scene_variables` (`image_width`/`image_height`/`pixel_samples`); see [SCENE_TRANSLATION.md](SCENE_TRANSLATION.md) |
+| `UPDATE_OBJECT` | add-on → bridge | request → ack/`ERROR` | **Decided and implemented — Phase 06** (geometry/transform/light; camera and material split out below): `payload.op` (`create`/`update`/`delete`), `payload.kind` (`mesh`/`light`), `payload.name`, plus kind-specific fields — see [SCENE_TRANSLATION.md](SCENE_TRANSLATION.md) |
+| `UPDATE_CAMERA` | add-on → bridge | request → ack/`ERROR` | **Decided and implemented — Phase 06**, see SCENE_TRANSLATION.md "Camera" |
 | `UPDATE_MATERIAL` | add-on → bridge | request → ack/`ERROR` | Open — Phase 07, see SCENE_TRANSLATION.md "Materials" |
 | `START_RENDER` | add-on → bridge | request → ack, then streamed `FRAME_UPDATE`/`RENDER_COMPLETE` | Decided: `render_mode` (`viewport`/`final`/`animation`), frame(s), sample/time budget; active-AOV list Open — Phase 09 |
 | `STOP_RENDER` | add-on → bridge | request → ack | Decided: correlates to the `id` of the `START_RENDER` being cancelled |
@@ -158,6 +158,6 @@ technology is chosen.
 | `UPDATE_OBJECT`/`UPDATE_CAMERA`/`UPDATE_MATERIAL` as distinct types | **Decided (this document)** |
 | `FRAME_UPDATE`/bulk payloads carry a reference, never inline arrays | **Decided (this document)**; reference format **Decided — Phase 04**: a POSIX shared-memory segment name (string) plus width/height/channels/dtype/byte_size — see `docs/bridge/FRAMEBUFFER_PROTOCOL.md`. |
 | Wire encoding | **Decided — Phase 04**: JSON (via JsonCpp) over a 4-byte little-endian length-prefixed frame. See `docs/evidence/phase04/`. |
-| Exact per-message payload field layout (mesh, camera, material attributes) | **Open — Phase 04/06/07**, owned by [SCENE_TRANSLATION.md](SCENE_TRANSLATION.md) |
+| Exact per-message payload field layout (mesh, camera, light) | **Decided and implemented — Phase 06**, owned by [SCENE_TRANSLATION.md](SCENE_TRANSLATION.md); material payload layout remains **Open — Phase 07** |
 | `CAPABILITIES` flag vocabulary | **Open**, grows per phase |
 | `protocol_version` range/negotiation across independently-upgraded binaries | **Open**, not before Phase 11 |

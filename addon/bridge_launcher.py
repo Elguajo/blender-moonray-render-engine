@@ -20,10 +20,11 @@ import uuid
 
 from . import bridge_client
 
-# Phase 04 build output (scripts/linux/phase04_build_bridge.sh). The build
+# Phase 06 build output (scripts/linux/phase06_build_bridge.sh, protocol_version
+# 2 -- structured CREATE_SCENE/UPDATE_OBJECT/UPDATE_CAMERA). The build
 # directory is disposable/not committed -- overridable via the add-on's
 # "Bridge Binary" preference for a rebuilt or relocated binary.
-DEFAULT_BRIDGE_BIN = "/root/moonray-blender/build/bridge04/moonray_bridge"
+DEFAULT_BRIDGE_BIN = "/root/moonray-blender/build/bridge06/moonray_bridge"
 DEFAULT_RDL2_DSO_PATH = "/root/moonray-blender/install/openmoonray/rdl2dso"
 DEFAULT_REZ_MOONRAY_ROOT = "/root/moonray-blender/install/openmoonray"
 

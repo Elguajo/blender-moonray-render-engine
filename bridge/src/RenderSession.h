@@ -1,9 +1,12 @@
 // Owns the MoonRay RenderContext lifecycle for one bridge connection
-// (docs/bridge/LIFECYCLE.md "Scene-session lifecycle"). Phase 04 scope only:
-// full-scene load from an .rdla file (docs/bridge/SCENE_TRANSLATION.md defers the
-// canonical mesh/camera/material bridge schema to Phase 04/06/07) and a single
-// synchronous BATCH render. Incremental updates and progressive/viewport modes
-// are out of scope (docs/phases/04-direct-bridge-prototype.md).
+// (docs/bridge/LIFECYCLE.md "Scene-session lifecycle"). Phase 06 replaced the
+// Phase 04/05 raw .rdla-path CREATE_SCENE with the structured schema in
+// docs/bridge/SCENE_TRANSLATION.md / ADR-0005: CREATE_SCENE builds an empty
+// SceneContext scaffold, UPDATE_OBJECT/UPDATE_CAMERA populate it via
+// SceneBuilder, and RenderContext::initialize() (which needs a camera/layer
+// already present) runs lazily on the first START_RENDER, not in
+// createScene(). A single synchronous BATCH render is still Phase 04/06
+// scope; progressive/viewport modes remain out of scope (Phase 08).
 #pragma once
 
 #include <json/json.h>
@@ -56,14 +59,27 @@ public:
     RenderSession(const RenderSession&) = delete;
     RenderSession& operator=(const RenderSession&) = delete;
 
-    // Validates `rdlaPath` (non-empty, exists, readable) before touching any
-    // native state (ERROR_MODEL.md category 1), then loads it as the full scene.
-    // Replaces any previously created scene in this session.
-    Json::Value createScene(const std::string& rdlaPath);
+    // Structured CREATE_SCENE (Phase 06, ADR-0005): constructs a fresh
+    // RenderContext (dropping any previous scene) and builds the
+    // SceneVariables/GeometrySet/Layer/LightSet/default-material scaffold via
+    // SceneBuilder::buildSceneScaffold. Does not call RenderContext::initialize()
+    // -- that happens lazily on the first startRender(), once UPDATE_OBJECT/
+    // UPDATE_CAMERA have populated at least a camera.
+    Json::Value createScene(const Json::Value& sceneVariables);
+
+    // UPDATE_OBJECT: create/update/delete one mesh or light. Valid only after
+    // createScene(). If the scene has already been initialize()d (a render
+    // already happened), flags the change via RenderContext::setSceneUpdated()
+    // so the next startRender() picks it up.
+    Json::Value updateObject(const Json::Value& payload);
+
+    // UPDATE_CAMERA: create/update the scene's single camera.
+    Json::Value updateCamera(const Json::Value& payload);
 
     // Runs one synchronous BATCH render of the current scene and publishes the
     // resulting beauty buffer into shared memory. Returns the RENDER_COMPLETE
     // payload (width/height/channels/dtype/shm_name/byte_size/elapsed_ms).
+    // Lazily calls RenderContext::initialize() on the first call.
     Json::Value startRender(const std::string& renderMode);
 
 private:
@@ -74,6 +90,8 @@ private:
     moonray::rndr::RenderOptions& mOptions;
     std::unique_ptr<moonray::rndr::RenderContext> mRenderContext;
     std::string mLastShmName;
+    bool mInitialized = false;
+    bool mHasCamera = false;
 };
 
 } // namespace moonray_bridge

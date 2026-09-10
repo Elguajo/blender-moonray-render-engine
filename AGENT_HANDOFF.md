@@ -66,4 +66,19 @@ in the actual Blender GUI (WSLg), verified by screenshot. A real MoonRay-side li
 in this build) was found, investigated, and worked around with an axis-snapped DistantLight
 approximation — not root-caused, flagged for later phases. See
 `docs/completions/05-blender-renderengine-integration.md` and `docs/evidence/phase05/`.
-No phase is currently `[>]`. Phase 06 requires explicit user approval before it may begin.
+Phase 06 (Geometry, transforms, camera and lights translation) is COMPLETE (2026-09-11): the
+bridge protocol was extended to a structured schema (ADR-0005: `CREATE_SCENE` builds an empty
+scaffold, `UPDATE_OBJECT`/`UPDATE_CAMERA` populate it via native RDL2 `SceneObject`
+construction in `bridge/src/SceneBuilder.cpp`, replacing Phase 04/05's raw `.rdla`-path
+`CREATE_SCENE`; `protocol_version` 1→2), `addon/scene_translator.py` replaces Phase 05's
+one-mesh/one-light translator with general multi-object translation and native Blender
+light-type mapping, and Phase 05's un-root-caused `DistantLight`/`SphereLight` anomaly was
+root-caused and fixed (a built-in 180°-about-local-X rotation in every RDL2 light class's
+`update()`, not a MoonRay defect — a bug in this project's own light-transform code).
+Verified via a 23-check bridge-protocol smoke test suite and a real Blender `--background`
+render (two mesh objects + a tilted `SUN` light) through the actual `RenderEngine.render()`
+path. See `docs/completions/06-geometry-camera-lights.md`, `docs/evidence/phase06/` and
+`docs/decisions/ADR-0005-structured-scene-protocol.md`. A known, documented limitation
+(mid-session delete-after-render does not reliably remove geometry from a subsequent render)
+is deferred to Phase 08, since Phase 06's own architecture never hits it. No phase is
+currently `[>]`. Phase 07 requires explicit user approval before it may begin.
