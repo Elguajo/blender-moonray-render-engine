@@ -48,5 +48,11 @@ through WSLg. See `docs/completions/02-host-runtime-foundation.md` and `docs/evi
 
 Phase 03 (native MoonRay runtime) is COMPLETE (2026-09-09): a pinned CPU-only MoonRay runtime was
 built and a standalone CPU render was verified. See `docs/completions/03-moonray-native-runtime.md`
-and `docs/evidence/phase03/`. No phase is currently `[>]`; Phase 04 requires explicit user approval
-before it may begin.
+and `docs/evidence/phase03/`. Its evidence was independently re-audited on 2026-09-10; four
+documentation/tooling defects were corrected (commit `6a75ccd`), no build or render result changed.
+
+Phase 04 (Direct MoonRay Bridge prototype and IPC contract) is the active `[>]` phase, approved by
+the user on 2026-09-10. Downstream build prerequisites were verified by actually building, linking
+and running a CMake consumer against the installed runtime; note the mandatory
+`-march=core-avx2 -mavx` compile flags recorded in `docs/project/NEXT_SESSION.md` -- without them no
+translation unit including MoonRay headers will compile.

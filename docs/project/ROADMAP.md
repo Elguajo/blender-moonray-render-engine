@@ -6,7 +6,7 @@ Legend: `[ ] PLANNED` · `[>] IN PROGRESS` · `[x] COMPLETE`
 - [x] Phase 01 — Compatibility research and Windows/WSL host architecture — `docs/phases/01-compatibility-and-host-architecture.md`
 - [x] Phase 02 — Windows/WSL/Linux GPU and Blender GUI foundation — `docs/phases/02-host-runtime-foundation.md`
 - [x] Phase 03 — Reproducible native MoonRay runtime — `docs/phases/03-moonray-native-runtime.md`
-- [ ] Phase 04 — Direct MoonRay Bridge prototype and IPC contract — `docs/phases/04-direct-bridge-prototype.md`
+- [>] Phase 04 — Direct MoonRay Bridge prototype and IPC contract — `docs/phases/04-direct-bridge-prototype.md`
 - [ ] Phase 05 — Blender RenderEngine integration and first F12 frame — `docs/phases/05-blender-renderengine-integration.md`
 - [ ] Phase 06 — Geometry, transforms, camera and lights translation — `docs/phases/06-geometry-camera-lights.md`
 - [ ] Phase 07 — Materials, textures and instances — `docs/phases/07-materials-textures-instances.md`
