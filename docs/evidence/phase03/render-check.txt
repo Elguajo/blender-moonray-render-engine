@@ -27,7 +27,7 @@ Output file:
   -rw-r--r-- 1 root root 345406 Sep  9 15:39 /root/moonray-blender/logs/phase03-rectangle.exr
   `file`: OpenEXR image data, version 2, storage: scanline, compression: zip,
           dataWindow: (0 0)-(511 511), displayWindow: (0 0)-(511 511), lineOrder: increasing y
-  sha256: c89ae49192adf77de10e0aabb418f5abf295bbce4d18119dee9789e0bfda897 [1]
+  sha256: c89ae49192adf77de10e0aabb418f5abf295bbce4d18119dee9789e0bfda8979 [1]
 
 exrheader (channel/metadata inspection, per Step 9's requirement to inspect more than
 file existence):
@@ -55,12 +55,31 @@ Reproducibility: this exact render was run twice from independently-invoked fres
 shells against the clean-rebuilt binary (moonray -help && render, in a script that sets
 its own PATH/RDL2_DSO_PATH/REZ_MOONRAY_ROOT from scratch, assuming nothing from a prior
 shell). Both runs exited 0, produced a valid EXR of the same dimensions, and produced
-IDENTICAL iinfo pixel statistics (min/max/avg/stddev to 6 decimal places) -- exact file
-bytes differ only in the embedded capDate timestamp string, as expected. A third,
+IDENTICAL iinfo pixel statistics (min/max/avg/stddev to 6 decimal places). A third,
 separately-timestamped render against the earlier (stale-cache) binary also produced
 these same identical pixel statistics, additionally confirming the render result itself
 does not depend on which of the two dependency-build locations was linked.
 
+CORRECTION (2026-09-10): the render is NOT bit-exact reproducible. An earlier revision of
+this file claimed "exact file bytes differ only in the embedded capDate timestamp string,
+as expected"; that was inferred from the matching iinfo statistics, never measured, and is
+wrong. Re-verified by an independent re-render from a fresh shell against the same clean
+binary (sha256 72ec8f64...fcb2c), output /root/moonray-blender/logs/verify-rectangle.exr:
+  exrheader diff vs. the recorded artifact -- capDate ONLY
+    ("2026:09:09 15:39:26" vs "2026:09:10 11:20:17"); every other header field identical
+  file size: 345406 vs 345442 bytes
+  iinfo -stats: identical to the values recorded above, to all 6 decimal places
+  idiff -fail 0.0 -warn 0.0:
+    Mean error = 7.49547e-09   RMS error = 4.80466e-08   Peak SNR = 146.546
+    Max error  = 1.43051e-06 @ (387, 230, R)
+    38904 pixels (14.8%) over 0
+This is float-level non-determinism from multi-threaded Monte Carlo accumulation order,
+~1e-06 in magnitude, far below any visible or practically meaningful threshold. It does
+not affect this phase's acceptance criterion (exit 0, valid non-constant EXR). The
+accurate claim is that the render is STATISTICALLY reproducible, not byte-identical:
+6-decimal aggregate statistics are too coarse to resolve a 1e-06 per-pixel difference,
+which is why the original claim went unchallenged.
+
 [1] Also recorded: sha256 of the moonray binary itself for this clean build:
-    72ec8f64f811e6459e7a32e7a467f28491963607f6775149bd72a3a0291fcb2
+    72ec8f64f811e6459e7a32e7a467f28491963607f6775149bd72a3a0291fcb2c
     (docs/evidence/phase03/README.md records the full provenance context.)

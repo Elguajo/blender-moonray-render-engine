@@ -20,9 +20,17 @@ openmoonray superproject b9b0ac29135b26e20a51edf9028558bb64df6700
 `moonray -in testdata/rectangle.rdla -out phase03-rectangle.exr` exited 0 and produced a
 valid 512x512 RGBA float EXR with non-constant pixel content (see
 `docs/evidence/phase03/render-check.txt`). No Hydra/hdMoonray/Arras/USD component was
-initialized or built. No CUDA/OptiX code path was compiled (`-DMOONRAY_USE_OPTIX=NO`,
-confirmed absent from every configure log). MoonRay XPU/GPU rendering was **not**
-attempted and is **not** claimed to work on this or any machine by this phase.
+initialized or built. No CUDA/OptiX code path was compiled
+(`-DMOONRAY_USE_OPTIX=NO`; zero "CUDA"/"OPTIX" lines in the `scene_rdl2`, `mcrt_denoise`,
+`moonray` and `moonshine` configure/build logs, and `MOONRAY_USE_OPTIX:BOOL=NO` in all
+four `CMakeCache.txt` files). Scope note: this does **not** extend to every log in the
+tree -- the third-party dependency build (`build-deps.log`) does contain an upstream
+`OptiXHeaders` ExternalProject step, which downloads OptiX 7.6.0 *headers* into
+`/opt/MoonRay/installs/include`. Nothing compiles or links against them while
+`MOONRAY_USE_OPTIX=NO`: `bin/moonray` and `lib64/librendering_rt.so` contain no
+`optix`/`cudart` strings, and no `shaders/` PTX directory is installed. MoonRay XPU/GPU
+rendering was **not** attempted and is **not** claimed to work on this or any machine by
+this phase.
 
 ## Delivered
 - `scripts/linux/phase03_install_packages.sh` — Rocky 9 OS package install (`--nocuda --noqt --nocgroup`).
@@ -43,7 +51,7 @@ attempted and is **not** claimed to work on this or any machine by this phase.
 | `moonray` binary installed, `ldd` fully resolved | PASS — zero "not found" libraries |
 | `moonray -help` runs | PASS |
 | Standalone CPU render of `testdata/rectangle.rdla` | PASS — exit 0, valid EXR, non-constant pixel stats, no NaN/Inf |
-| Fresh-shell reproducibility (2 independent runs) | PASS — identical pixel statistics both times |
+| Fresh-shell reproducibility (2 independent runs) | PASS — identical `iinfo` pixel statistics both times. Statistically, **not** byte-for-byte: an independent 2026-09-10 re-render differs by max 1.43e-06 on 14.8% of pixels (`idiff`). See the CORRECTION block in `docs/evidence/phase03/render-check.txt`. |
 | Clean rebuild from empty build/install dirs | PASS — see "Problems discovered and fixed" |
 | Hydra/hdMoonray/Arras/USD never initialized or built | PASS — confirmed by submodule/directory inspection, not assumed |
 
@@ -84,6 +92,41 @@ in order: an OptiX-enabled build actually compiles here, the GPU accelerator act
 initializes at runtime under WSL2 (independently reported as failing for OptiX on WSL2
 in OpenMoonRay's own community discussions), and a render actually executes via
 `-exec_mode xpu` rather than silently falling back to CPU.
+
+## Post-completion audit corrections (2026-09-10)
+An independent skeptical re-audit of this phase was run on 2026-09-10 against the live
+system (source pins, `ldd`, a fresh render, build logs, `CMakeLists.txt` gating, roadmap
+and commit scope). Every acceptance criterion re-confirmed; the pinned SHAs, the
+`/opt/MoonRay/installs`-only dependency resolution of the clean-rebuilt binary
+(sha256 `72ec8f64...fcb2c`), and the recorded pixel statistics all reproduced exactly.
+Four **documentation/tooling** defects were found and fixed. No build artifact, source
+pin or render result changed.
+
+1. `render-check.txt` recorded both sha256 values truncated to 63 characters. Corrected
+   against the live `sha256sum` output (`README.md` already held the correct 64-char
+   values).
+2. `render-check.txt` claimed the two renders' "exact file bytes differ only in the
+   embedded capDate timestamp string". That was inferred from matching `iinfo`
+   statistics, never measured, and is wrong: `idiff` shows max error 1.43e-06 on 14.8%
+   of pixels. Corrected in place with the measured numbers; the render is statistically,
+   not bit-exactly, reproducible. Acceptance is unaffected.
+3. This record's "confirmed absent from every configure log" (CUDA/OptiX) was too broad:
+   `build-deps.log` contains an upstream `OptiXHeaders` ExternalProject step that
+   installs OptiX 7.6.0 headers into `/opt/MoonRay/installs/include`. Scoped correctly in
+   the Outcome section above; the CPU-only claim itself is unchanged and was
+   independently re-verified (`MOONRAY_USE_OPTIX:BOOL=NO` in all four caches, no
+   `optix`/`cudart` strings in `bin/moonray` or `lib64/librendering_rt.so`, no installed
+   `shaders/` PTX directory, no CUDA rpms).
+4. `scripts/linux/phase03_render_test.sh` logged `moonray`'s exit code but gated only on
+   file existence plus `file`'s type string, and never ran `iinfo`/`exrheader` — so the
+   committed script did not reproduce the "non-constant pixel content" check this phase's
+   acceptance criterion rests on. It now fails on a non-zero `moonray` exit, on
+   unresolved libraries, on a constant image, on any NaN/Inf pixel, and on unexpected
+   dimensions/format, and it writes `exrheader` + `iinfo -stats` into the render log. An
+   output-path override (`PHASE03_OUT_EXR`) was added so re-verification runs cannot
+   clobber the recorded evidence artifact. Re-run on 2026-09-10: exits 0 on the real
+   runtime, and `moonray` was confirmed to return exit 1 on a missing scene, so the new
+   exit-code gate is load-bearing rather than decorative.
 
 ## Follow-up
 Phase 04: smallest native `moonray_bridge` process + IPC contract + renderer proof,
