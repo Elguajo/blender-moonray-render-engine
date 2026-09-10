@@ -8,7 +8,7 @@ Legend: `[ ] PLANNED` · `[>] IN PROGRESS` · `[x] COMPLETE`
 - [x] Phase 03 — Reproducible native MoonRay runtime — `docs/phases/03-moonray-native-runtime.md`
 - [x] Phase 04 — Direct MoonRay Bridge prototype and IPC contract — `docs/phases/04-direct-bridge-prototype.md`
 - [x] Phase 05 — Blender RenderEngine integration and first F12 frame — `docs/phases/05-blender-renderengine-integration.md`
-- [ ] Phase 06 — Geometry, transforms, camera and lights translation — `docs/phases/06-geometry-camera-lights.md`
+- [>] Phase 06 — Geometry, transforms, camera and lights translation — `docs/phases/06-geometry-camera-lights.md`
 - [ ] Phase 07 — Materials, textures and instances — `docs/phases/07-materials-textures-instances.md`
 - [ ] Phase 08 — Interactive Rendered Viewport — `docs/phases/08-interactive-viewport.md`
 - [ ] Phase 09 — Final render, AOVs, animation and EXR — `docs/phases/09-final-render-aovs-animation.md`

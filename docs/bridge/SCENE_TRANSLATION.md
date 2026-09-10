@@ -48,12 +48,47 @@ Grounded in `.../shaders/geometry-procedurals.md` (`createPolygonMesh`,
 built-ins confirmed in `dso/geometry/`: `RdlCurve`, `RdlInstancerGeometry`, `RdlPoint`,
 `Vdb`.
 
-**Reported, not yet source-verified:** a third-party scene_rdl2 pybind11 experiment noted
-that a `GeometrySet` scene object must exist and contain the geometry for a render to be
-valid, even when nothing else references that `GeometrySet`
-([OpenMoonRay discussion #223](https://github.com/OpenMoonRay/openmoonray/discussions/223)).
-Treat as a hypothesis to confirm against `scene_rdl2`'s `GeometrySet.h`/`.cc` and
-`RenderContext` before relying on it in Phase 06 geometry work, not as a decided fact.
+**Confirmed against pinned source (Phase 06 pre-flight, 2026-09-10), superseding the earlier
+"reported, not yet source-verified" note from OpenMoonRay discussion #223:** a `Geometry`
+object must be a member of at least one `GeometrySet` in the `SceneContext` to actually
+appear in the render — **Layer assignment alone is not sufficient.**
+
+Evidence, read directly from source at the commits pinned in `UPSTREAM_LOCK.json` (not from
+docs, not from discussion #223):
+- `scene_rdl2` `lib/scene/rdl2/GeometrySet.h`/`.cc` (`1229d3ea...`): a `GeometrySet` is a
+  `SceneObject` holding one attribute, `geometries` (`SceneObjectIndexable`), with
+  `add()`/`remove()`/`contains()` convenience methods. Nothing here alone proves it is
+  render-mandatory — that requires tracing who actually reads it.
+- `moonray` `lib/rendering/rt/GeometryManager.cc` (`eef67ae9...`) is where it becomes
+  mandatory. `GeometryManager::finalizeChange()` (the BVH-build entry point used for a full
+  scene build, `ChangeFlag::ALL`) calls `mSceneContext->getAllGeometrySets()` to obtain the
+  `GeometrySetVector` it hands to `collectPrimitives()`. `collectPrimitives()` (`:819-861`)
+  iterates **only** `for (auto& geometrySet : geometrySets) { ... geometrySet->getGeometries() ...}`
+  — i.e. it visits geometry exclusively by walking `GeometrySet` membership. For each geometry
+  found this way it then checks `g2s.find(geom)` (the Layer's `GeometryToRootShadersMap`) and
+  skips it if the Layer never assigned it — so Layer assignment is a *necessary filter inside*
+  the GeometrySet walk, not an alternate way to reach a geometry. A `Geometry` scene object
+  that is assigned in the `Layer` but is a member of **no** `GeometrySet` is never visited by
+  this loop at all: its `Procedural` is never generated, never tessellated, and it is silently
+  absent from the BVH and the render, with **no error, no warning, no validation failure** —
+  RDL2 accepts and stores the object either way.
+- `RenderContext.cc`'s two `beginGeometrySet()`/`endGeometrySet()` call sites (`:2803-2805`,
+  `:2854-2856`, `reportGeometryMemory()`/`reportGeometryStatistics()`) are reporting-only and
+  were not the deciding evidence — `GeometryManager.cc` is.
+
+**Consequence for Phase 06 (load-bearing for the translation schema, not just a note):** every
+`Geometry`-derived object the translator creates (mesh, and later any instancer geometry) MUST
+be added to a `GeometrySet` that is itself `includeInBVH()` (default `true`) as part of the
+same scene-build/update, in addition to its `Layer` assignment. Phase 05's own
+`addon/scene_writer.py:335-337` already does this by construction (mirroring
+`testdata/rectangle.rdla`, not because it had been source-verified) — Phase 06's canonical
+schema and its incremental add/update/delete semantics must preserve this invariant
+explicitly and deliberately, including on incremental adds: a newly created `Geometry` that
+is assigned to the `Layer` but not yet added to the relevant `GeometrySet` in the same update
+will render as if it does not exist, with no diagnostic — this is exactly the kind of silent
+mis-render Phase 06's acceptance criteria ("Unsupported types fail or fall back explicitly,
+never silently mis-render") is written to prevent, so add-to-GeometrySet must be treated as a
+mandatory, validated step of "add a geometry object," not an optional/best-effort one.
 
 ## Transforms
 ```text
@@ -229,6 +264,7 @@ but the bridge's own wire-level update protocol is **Open — Phase 06.**
 | RDL2 `SceneContext`/`SceneObject`/`SceneClass`/`Attribute` as the target data model | **Decided** (RDL2 API, not a project choice) |
 | `node_xform` carries world transform for every `Node` subclass | **Decided** (RDL2 API) |
 | Mesh target class is `RdlMeshGeometry` | **Confirmed** (source-checked); bridge message layout **Open — Phase 04/06** |
+| Every rendered `Geometry` must be added to a `GeometrySet`, not just the `Layer` | **Confirmed** (source-checked, `GeometryManager.cc` — see "Mesh geometry" above) |
 | Camera/light built-in class names + confirmed attribute lists | **Confirmed** (source-checked) |
 | Blender light type → specific RDL2 light class | **Proposed** (table above); render-fixture verification **Open — Phase 06** |
 | Camera field unit/convention mapping (lens↔focal, sensor fit, etc.) | **Open — Phase 06** |

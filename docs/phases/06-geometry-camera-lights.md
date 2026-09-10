@@ -1,6 +1,6 @@
 # Phase 06 — Geometry, transforms, camera and lights translation
 
-Status: PLANNED
+Status: IN PROGRESS
 
 ## Goal
 Establish deterministic scene translation for production-relevant geometry, transforms, camera and core lights.
