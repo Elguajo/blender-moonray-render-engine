@@ -3,7 +3,8 @@
 Canonical quick reference for prior public attempts to integrate MoonRay into Blender. Full audit:
 [`04-prior-blender-moonray-implementations.md`](04-prior-blender-moonray-implementations.md);
 machine-readable data: [`04-prior-implementation-matrix.json`](04-prior-implementation-matrix.json).
-Audited 2026-09-09.
+Audited 2026-09-09. Applied follow-up harvest (what is actually reusable, and under what license):
+[`05-prior-art-harvest.md`](05-prior-art-harvest.md), 2026-09-10.
 
 ## Most relevant prior projects
 
