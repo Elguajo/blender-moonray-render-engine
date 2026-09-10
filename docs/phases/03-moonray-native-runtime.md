@@ -1,6 +1,6 @@
 # Phase 03 — Reproducible native MoonRay runtime
 
-Status: CURRENT — PRE-BUILD AUDIT COMPLETE — BUILD BLOCKED ON USER APPROVAL
+Status: COMPLETE — 2026-09-09. See `docs/completions/03-moonray-native-runtime.md` and `docs/evidence/phase03/`.
 
 ## Goal
 Build or install a pinned standalone MoonRay runtime inside the validated Linux/WSL environment, independent of Hydra, and prove a minimal CPU render from MoonRay-native tooling/APIs.
@@ -24,15 +24,15 @@ Build or install a pinned standalone MoonRay runtime inside the validated Linux/
 ## Tasks
 - [x] Verify current upstream build prerequisites from primary sources — `docs/research/03-upstream-pin-audit.md`.
 - [x] Record exact source commits/tags/checksums, reconciled against the openmoonray superproject gitlinks — `UPSTREAM_LOCK.json`, `configs/moonray-source-lock.json`.
-- [ ] Create reproducible build/install script (plan prepared, not executed — `docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.md`).
-- [ ] Run minimal MoonRay CPU render.
-- [ ] Capture logs/output/checksums.
+- [x] Create reproducible build/install scripts — `scripts/linux/phase03_install_packages.sh`, `scripts/linux/phase03_build_deps.sh`, `scripts/linux/phase03_build_moonray.sh`, `scripts/linux/phase03_render_test.sh` (superseding the monolithic-preset approach in `docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.md` — see that file's correction note and `docs/evidence/phase03/README.md` for why).
+- [x] Run minimal MoonRay CPU render — `testdata/rectangle.rdla`, exit code 0, valid 512x512 RGBA EXR, non-constant pixel content verified.
+- [x] Capture logs/output/checksums — `docs/evidence/phase03/`.
 
 ## Acceptance criteria
-- [ ] Fresh shell can reproduce MoonRay runtime from documented steps.
-- [ ] Standalone CPU render succeeds with observed output.
-- [ ] scene_rdl2/MoonRay library/runtime paths are known.
-- [ ] No Hydra dependency is required for baseline render.
+- [x] Fresh shell can reproduce MoonRay runtime from documented steps — verified twice via independent `wsl.exe` invocations of `scripts/linux/phase03_render_test.sh`, identical pixel statistics both times. A full clean rebuild (not just a fresh shell) was also performed and is the authoritative evidence — see `docs/evidence/phase03/README.md`.
+- [x] Standalone CPU render succeeds with observed output — `docs/evidence/phase03/render-check.txt`.
+- [x] scene_rdl2/MoonRay library/runtime paths are known — `docs/evidence/phase03/runtime-check.txt` (full `ldd` resolution, zero unresolved libraries).
+- [x] No Hydra dependency is required for baseline render — `hydra`/`hdMoonray`/`moonshine_usd` submodules were never initialized or built; confirmed by inspecting the actual `CMakeLists.txt` dependency graph, not assumed.
 
 ## Verification
 - Build logs and version commands.
@@ -49,6 +49,4 @@ prepared and is ready for execution: `docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.m
 was built, installed, or rendered by this audit.
 
 ## Completion Record
-Status: NOT STARTED — pre-build audit complete, build not yet attempted.
-
-When complete, write `docs/completions/03-moonray-native-runtime.md`, update Roadmap/NEXT_SESSION, then STOP for user approval.
+Status: COMPLETE. See `docs/completions/03-moonray-native-runtime.md`.

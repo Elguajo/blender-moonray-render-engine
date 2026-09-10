@@ -1,0 +1,92 @@
+Phase 03 CMake configure summary -- observed inside MoonRay-Rocky9, clean rebuild,
+2026-09-09. Full logs (large) remain WSL-native at
+/root/moonray-blender/logs/phase03-build/build-{scene_rdl2,mcrt_denoise,moonray,moonshine,deps}.log
+and are not committed to git; excerpts below are copied verbatim from those logs.
+
+== Build approach actually used ==
+NOT `cmake --preset rocky9-release` against the openmoonray superproject (the prepared
+runbook's original plan). Each required repository was configured/built/installed
+SEPARATELY against its own CMakeLists.txt, per upstream's own documented
+"Building the Repositories Separately" procedure (building/general_build.md). See
+docs/evidence/phase03/README.md for why.
+
+Common flags applied to every one of the 4 per-repository configure calls:
+  -DCMAKE_MODULE_PATH=<src>/cmake_modules/cmake
+  -DPYTHON_EXECUTABLE=python3
+  -DBOOST_PYTHON_COMPONENT_NAME=python39
+  -DABI_VERSION=0
+  -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_INSTALL_PREFIX=/root/moonray-blender/install/openmoonray
+  -DMOONRAY_USE_OPTIX=NO
+Environment: CMAKE_PREFIX_PATH=/opt/MoonRay/installs:/root/moonray-blender/install/openmoonray,
+ISPC/CppUnit_ROOT/JsonCpp_ROOT/Log4cplus_ROOT/LUA_DIR/OpenSubDiv_ROOT/OpenVDB_ROOT/
+Random123_ROOT all pointed at /opt/MoonRay/installs (per building/general_build.md's
+"Finding Dependencies" table).
+
+Third-party dependency build (building/Rocky9/CMakeLists.txt, separate CMake project):
+  -DNO_USD=1   (skips building Pixar USD from source -- Hydra/hdMoonray/USD are out of
+                scope for Phase 03 per ADR-0002 and are never invoked by the 4 per-repo
+                builds above, so nothing in scope needs it)
+  Install root left at its upstream default (/opt/MoonRay/installs) -- see README.md.
+
+== scene_rdl2 configure (excerpt) ==
+-- Found Boost: /usr/lib64/cmake/Boost-1.75.0/BoostConfig.cmake (found version "1.75.0") found components: filesystem program_options regex thread
+-- Found Log4cplus: /lib64/liblog4cplus.so
+-- Found TBB version 2020.3 at /opt/MoonRay/installs
+-- Found Boost: ... found components: system python39 date_time chrono
+-- Configuring done (0.3s)
+-- Generating done (0.3s)
+
+== mcrt_denoise configure (excerpt) ==
+-- Found Boost: ... (found version "1.75.0") found components: filesystem program_options regex thread
+-- Found Lua: /usr/lib64/liblua-5.4.so;/usr/lib64/libm.so (found version "5.4.4")
+-- Found CppUnit: /lib64/libcppunit.so
+-- Found OpenSSL: /usr/lib64/libcrypto.so (found version "3.5.5")
+-- Found JsonCpp: /opt/MoonRay/installs/lib64/libjsoncpp.so
+-- Found Log4cplus: /lib64/liblog4cplus.so
+-- Found TBB version 2020.3 at /opt/MoonRay/installs
+-- Configuring done (6.9s)
+-- Generating done (0.0s)
+NOTE: no "Found CUDA"/"Found OptiX" lines appear anywhere in this log -- confirms
+mcrt_denoise/CMakeLists.txt's `if(MOONRAY_USE_OPTIX) find_package(CUDAToolkit REQUIRED)
+find_package(OptiX REQUIRED) endif()` block was correctly skipped (resolves audit open
+question #7 from docs/research/03-upstream-pin-audit.md: MOONRAY_USE_OPTIX=NO alone is
+sufficient, no separate mcrt_denoise-specific flag is needed).
+
+== moonray configure (excerpt) ==
+-- Found Boost: ... (found version "1.75.0")
+-- Found Boost: ... found components: filesystem program_options regex thread
+-- Found TBB version 2020.3 at /opt/MoonRay/installs
+-- Found OpenSubDiv: /opt/MoonRay/installs/lib/libosdCPU.so;/opt/MoonRay/installs/lib/libosdGPU.so
+-- Found TBB version 2020.3 at /opt/MoonRay/installs
+-- Configuring done (24.2s)
+-- Generating done (1.6s)
+NOTE: no "CUDA"/"OPTIX" strings appear anywhere in this log at all -- moonray's own
+lib/rendering/rt/CMakeLists.txt gates every CUDA/OptiX find_package/source file behind
+`if(MOONRAY_USE_OPTIX)`, which is NO, so those code paths were never even probed for,
+let alone compiled. This is direct configure-time confirmation of a CPU-only build.
+
+== moonshine configure (excerpt) ==
+-- Found TBB version 2020.3 at /opt/MoonRay/installs
+-- Found BISON: /usr/bin/bison (found version "3.7.4")
+-- Found FLEX: /usr/bin/flex (found version "2.6.4")
+-- Found Boost: ... (found version "1.75.0")
+-- Found ZLIB: /usr/lib64/libz.so (found version "1.2.11")
+-- Found JPEG: /usr/lib64/libjpeg.so (found version "62")
+-- Found CppUnit: /lib64/libcppunit.so
+-- Found JsonCpp: /opt/MoonRay/installs/lib64/libjsoncpp.so
+-- Found OpenVDB: /lib64/libopenvdb.so
+-- Found OpenSubDiv: /opt/MoonRay/installs/lib/libosdCPU.so;/opt/MoonRay/installs/lib/libosdGPU.so
+-- Found Random123: /opt/MoonRay/installs/include/Random123/..
+-- Configuring done (19.6s)
+-- Generating done (1.6s)
+
+== Compiler actually used ==
+gcc/g++ 11.5.0 (Red Hat 11.5.0-14) -- the only compiler on PATH in MoonRay-Rocky9,
+confirmed in preflight.txt; no alternate CXX/CC override was set anywhere in the build
+scripts, so this is what CMake picked up by default.
+
+== Install prefix ==
+/root/moonray-blender/install/openmoonray -- shared by scene_rdl2, mcrt_denoise,
+moonray and moonshine (each installed in turn, each subsequent build finding the prior
+one via this same prefix already being on CMAKE_PREFIX_PATH).

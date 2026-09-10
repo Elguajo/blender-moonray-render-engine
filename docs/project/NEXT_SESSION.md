@@ -10,13 +10,33 @@ Windows 11 build 10.0.26100.9445
         └── Blender 5.2.1 LTS Linux, GUI verified through WSLg
 ```
 
-Phase 03 is the current `[>]` phase. Its pre-build upstream dependency audit is complete
-(`docs/research/03-upstream-pin-audit.md`, 2026-09-09): the pinned `openmoonray` superproject
-commit, and the `moonray`/`scene_rdl2`/`moonshine` gitlinks it references, were reconciled and
-found internally consistent; `mcrt_denoise` and `cmake_modules` were added as previously
-untracked build-critical dependencies; the Blender pin was independently re-verified against
-the official GitHub mirror. A build plan is prepared (`docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.md`).
-**No build has been attempted.** It requires explicit user approval before execution.
+Phase 03 (native MoonRay runtime) is **COMPLETE** (2026-09-09). A pinned, CPU-only MoonRay
+runtime was built inside `MoonRay-Rocky9` from the audited source snapshot
+(`docs/research/03-upstream-pin-audit.md`) and a standalone CPU render of
+`testdata/rectangle.rdla` was verified (exit 0, valid 512x512 RGBA EXR, non-constant pixel
+content, reproduced twice from fresh shells after a clean rebuild). Full detail:
+`docs/completions/03-moonray-native-runtime.md` and `docs/evidence/phase03/`. No phase is
+currently `[>]`. Phase 04 requires explicit user approval before it may begin.
+
+Key facts carried forward from Phase 03:
+- Installed runtime: `/root/moonray-blender/install/openmoonray` (binaries incl. `moonray`,
+  `rdl2_json_exporter`, etc. under `bin/`, libs under `lib64/`).
+- Third-party dependency build: `/opt/MoonRay/installs` (Linux-native ext4, upstream's own
+  hardcoded default — see the completion record for why this was kept rather than relocated).
+- The monolithic `cmake --preset rocky9-release` approach in the original build plan was
+  **not** used — it would have hard-failed or dragged in Hydra/hdMoonray/Arras/USD. Each
+  required repository (`scene_rdl2`, `mcrt_denoise`, `moonray`, `moonshine`) was built
+  separately instead, per upstream's own documented alternative. Use
+  `scripts/linux/phase03_build_moonray.sh` (and the other `scripts/linux/phase03_*.sh`
+  scripts) as the reproducible reference, not the original preset-based plan text.
+- `moonshine` is a hard requirement (not merely a Phase 07 nice-to-have) — the canonical
+  upstream test scene uses `DwaBaseMaterial`, which lives in `moonshine`.
+- A concurrent/prior build attempt on the same workstation left its own artifacts at
+  `/root/moonray-blender/install/deps` and per-repo install dirs; left untouched, unrelated
+  to this session's own evidence. See `docs/evidence/phase03/README.md`.
+- GPU/XPU: not attempted, not proven. `-DMOONRAY_USE_OPTIX=NO` throughout; no CUDA/OptiX code
+  compiled. See `docs/completions/03-moonray-native-runtime.md`'s "GPU/XPU status" section for
+  exactly what a future validation phase would need to prove.
 
 ## Durable decisions
 - Windows 11 workstation host.
@@ -43,10 +63,12 @@ the official GitHub mirror. A build plan is prepared (`docs/runbooks/PHASE03_MOO
 
 ## Supporting repository infrastructure
 - `docs/vendor/openmoonray/` — pinned local mirror of the OpenMoonRay developer-reference documentation (see its `UPSTREAM.json` / `ATTRIBUTION.md`). Reference material only; it does not advance any phase.
-- `UPSTREAM_LOCK.json` — pinned OpenMoonRay dependency commits, reconciled against the openmoonray superproject's own submodule gitlinks as of the Phase 03 pre-build audit (2026-09-09). Treat as canonical; do not choose new commits ad hoc.
+- `UPSTREAM_LOCK.json` — pinned OpenMoonRay dependency commits, reconciled against the openmoonray superproject's own submodule gitlinks as of the Phase 03 pre-build audit (2026-09-09), and now built successfully against exactly these commits. Treat as canonical; do not choose new commits ad hoc.
 - `configs/moonray-source-lock.json` — minimal machine-readable build manifest derived from `UPSTREAM_LOCK.json`, for the CPU-baseline component subset only.
 - `docs/research/03-upstream-pin-audit.md` — the Phase 03 pre-build audit: dependency reconciliation table, full 20-submodule inventory with required/optional/excluded classification, and build risks pulled from real upstream build docs.
-- `docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.md` — the prepared (not executed) Phase 03 build plan: clone/checkout/build/install/test/rollback steps.
+- `docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.md` — the original build plan, with a correction note added after real execution (see its top) pointing at what was actually run.
+- `scripts/linux/phase03_install_packages.sh`, `phase03_build_deps.sh`, `phase03_build_moonray.sh`, `phase03_render_test.sh` — the actual, executed, reproducible Phase 03 build scripts.
+- `docs/completions/03-moonray-native-runtime.md`, `docs/evidence/phase03/` — the Phase 03 Completion Record and evidence.
 
 ## Read first
 1. `AGENTS.md` / `CLAUDE.md` as applicable.
@@ -54,29 +76,22 @@ the official GitHub mirror. A build plan is prepared (`docs/runbooks/PHASE03_MOO
 3. `docs/project/ARCHITECTURE.md`
 4. `docs/project/ROADMAP.md`
 5. `docs/project/NEXT_SESSION.md`
-6. `docs/phases/03-moonray-native-runtime.md`
+6. `docs/completions/03-moonray-native-runtime.md` and `docs/evidence/phase03/` for what Phase 03 actually proved.
 7. `docs/decisions/ADR-0002-direct-moonray-bridge-primary.md`
-8. `docs/completions/02-host-runtime-foundation.md` and `docs/evidence/phase02-host-evidence.md` for host facts.
+8. `docs/phases/04-direct-bridge-prototype.md` before Phase 04 is approved to start.
 
-## Current assignment — Phase 03 only, after explicit approval
-Pre-build audit is done (see above). What remains, build a pinned, reproducible native MoonRay
-runtime inside `MoonRay-Rocky9` and prove a minimal CPU render, following
-`docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.md`:
-- clone `openmoonray` at `b9b0ac29135b26e20a51edf9028558bb64df6700` and sync the pinned submodule gitlinks (`configs/moonray-source-lock.json`);
-- install Rocky 9 packages with `--nocuda`, configure with `-DMOONRAY_USE_OPTIX=NO -DBUILD_QT_APPS=NO -DPYTHON_EXECUTABLE=python3 -DBOOST_PYTHON_COMPONENT_NAME=python39 -DABI_VERSION=0`;
-- build and install into `/root/moonray-blender/{src,build,install}`;
-- run a minimal standalone CPU render and capture the output artifact;
-- record runtime paths, DSOs, logs and a rollback procedure;
-- watch the open build risks recorded in `docs/research/03-upstream-pin-audit.md` (CMake version, ISPC toolchain, Python 3.9 boost binding assumption unverified inside the distro, `mcrt_denoise` GPU-disable flag uncertainty, serial dependency build time, 15 GiB WSL RAM vs. 28-thread `-j` parallelism).
-
-Explicitly out of scope for Phase 03: hdMoonray/Hydra, any Blender add-on or `RenderEngine` work, viewport, XPU acceptance.
+## Current assignment — awaiting user approval to start Phase 04
+Phase 03 is complete (see above). Phase 04 (smallest native `moonray_bridge` process +
+IPC contract, building on the installed runtime at
+`/root/moonray-blender/install/openmoonray`) has **not** been started and requires
+explicit user approval before any work begins, per the mandatory phase protocol.
 
 ## Practical notes for the next session
 - Enter the distro with `wsl -d MoonRay-Rocky9`; the project is visible at `/mnt/d/01_DEV/blender-moonray-render-engine`.
 - Keep all build trees under `/root/moonray-blender`, never on `/mnt/*`.
 - Calling `wsl.exe` from PowerShell 5.1 needs `$env:WSL_UTF8=1` and tolerance for native stderr; see `Invoke-Wsl` in `scripts/windows/phase02_setup_wsl_rocky.ps1`.
 - From Git Bash, prefix `wsl.exe` calls with `MSYS_NO_PATHCONV=1` or `/mnt/...` paths get mangled.
-- WSL currently sees 15 GiB RAM. If the MoonRay build needs more, tune `%USERPROFILE%\.wslconfig` and record it as a Phase 03 decision.
+- WSL currently sees 15 GiB RAM. This was sufficient for the full Phase 03 build (deps + 4 repositories) at a conservative `-j 8`; no `.wslconfig` tuning was needed.
 - One manual cleanup is outstanding: delete `D:\WSL\MoonRay-Rocky9\shortcut.ico`.
 
 ## Mandatory phase protocol

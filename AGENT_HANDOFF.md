@@ -46,7 +46,7 @@ Read:
 Phase 02 passed on real hardware (2026-09-09): WSL2 + Rocky Linux 9.8 + Blender 5.2.1 LTS GUI verified
 through WSLg. See `docs/completions/02-host-runtime-foundation.md` and `docs/evidence/phase02-host-evidence.md`.
 
-Current phase is Phase 03 (native MoonRay runtime). Its pre-build upstream dependency audit is
-complete (`docs/research/03-upstream-pin-audit.md`, 2026-09-09) and a build plan is prepared
-(`docs/runbooks/PHASE03_MOONRAY_BUILD_PLAN.md`). The actual build has NOT been started and
-needs explicit user approval.
+Phase 03 (native MoonRay runtime) is COMPLETE (2026-09-09): a pinned CPU-only MoonRay runtime was
+built and a standalone CPU render was verified. See `docs/completions/03-moonray-native-runtime.md`
+and `docs/evidence/phase03/`. No phase is currently `[>]`; Phase 04 requires explicit user approval
+before it may begin.

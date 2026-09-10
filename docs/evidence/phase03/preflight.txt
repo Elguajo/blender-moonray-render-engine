@@ -1,0 +1,27 @@
+Phase 03 preflight -- observed inside MoonRay-Rocky9 (WSL2), 2026-09-09
+Captured by scripts run from this repo; full raw output also at
+/root/moonray-blender/logs/phase03-build/preflight.txt (WSL-native, not committed to git).
+
+distro:      Rocky Linux 9.8 (Blue Onyx)
+kernel:      Linux DESKTOP-9O2U790 6.6.87.2-microsoft-standard-WSL2 x86_64
+mem:         15 GiB total, ~11-12 GiB available, 4 GiB swap
+disk (/):    /dev/sdd ext4, 1007G total, 949G free -- confirmed Linux-native (NOT a 9p/Windows mount)
+cpu:         28 logical (Intel Xeon E5-2690 v4 @ 2.60GHz, 14 cores/2 threads)
+gcc/g++:     11.5.0 20240719 (Red Hat 11.5.0-14)
+cmake:       3.31.8 (already exceeds the upstream-required >=3.23.1 -- no manual CMake
+             install was needed; install_packages.sh still downloads its own pinned
+             3.23.1 tarball into /installs as a harmless, unused side effect of running
+             that vendored script unmodified)
+ninja:       1.10.2 (not used -- upstream presets/build use "Unix Makefiles")
+python3:     3.9.25 at /usr/bin/python3 (confirms BOOST_PYTHON_COMPONENT_NAME=python39
+             is the correct flag for this distro, resolving an open question from
+             docs/research/03-upstream-pin-audit.md build risk #2)
+git:         2.52.0
+git-lfs:     3.7.1
+CRB repo:    enabled (required by install_packages.sh)
+nvidia-smi:  NVIDIA GeForce RTX 3060, 12288 MiB, driver reports CUDA UMD 13.3 --
+             evidence only, per user instruction NOT used or relied on for this
+             CPU-only phase.
+mount check: /root/moonray-blender resolves on /dev/sdd (ext4), NOT under /mnt/c or
+             /mnt/d (which are 9p Windows-mount filesystems, confirmed present but
+             unused for build/install/source trees).

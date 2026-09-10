@@ -1,0 +1,33 @@
+Phase 03 runtime verification -- observed inside MoonRay-Rocky9, clean rebuild,
+2026-09-09. Produced by scripts/linux/phase03_render_test.sh run from a fresh WSL
+shell (no environment inherited from the build steps). Full log:
+/root/moonray-blender/logs/phase03-build/runtime-check.log (WSL-native).
+
+moonray binary present? FOUND: /root/moonray-blender/install/openmoonray/bin/moonray
+
+ldd /root/moonray-blender/install/openmoonray/bin/moonray:
+  - linux-vdso.so.1, ld-linux-x86-64.so.2, libc/libm/libstdc++/libgcc_s -- system, resolved
+  - all MoonRay-internal libs (libapplication, librendering_*, libcommon_*, libscene_rdl2,
+    libshading_*, libmath_ispc, libdeepfile, libstatistics, librender_*) resolve under
+    /root/moonray-blender/install/openmoonray/bin/../lib64/ -- our own install prefix
+  - third-party libs resolve under /opt/MoonRay/installs/{lib,lib64}/ (osdCPU/osdGPU,
+    OpenImageIO[+Util], jsoncpp, tbb, embree4, OpenColorIO) -- our own dependency build,
+    NOT any pre-existing system copy or unrelated location
+  - remaining libs (boost_*, openvdb, log4cplus, lua, ssl/crypto, zlib, jpeg, png, tiff,
+    gif, icu*, freetype, blosc, webp, zstd, snappy, harfbuzz, brotli*, lz4, lzma, glib,
+    graphite2, pcre, bz2, jbig, atomic) resolve to the Rocky 9 system /lib64 packages
+    installed by scripts/linux/phase03_install_packages.sh
+
+"ldd ... | grep -i 'not found'" result: (none -- all libraries resolved)
+
+moonray -help: runs successfully, prints full usage (confirms the binary executes and
+is not just present -- exit code observed 0, output includes -exec_mode
+scalar|vectorized|xpu|auto and every other documented CLI option).
+
+This exact check was run twice against two independently built binaries (see README.md):
+once against a build that turned out to reuse a stale, pre-existing CMakeCache.txt from
+an unrelated earlier build attempt (still fully functional, but not attributable purely
+to this session's own dependency build), and once -- this one -- against a from-scratch
+clean rebuild with no reused cache. Both resolved with zero "not found" libraries and
+both rendered correctly; only the second is treated as authoritative evidence for this
+Completion Record.

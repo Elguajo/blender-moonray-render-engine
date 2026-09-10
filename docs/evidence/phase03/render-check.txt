@@ -1,0 +1,66 @@
+Phase 03 minimal standalone CPU render -- observed inside MoonRay-Rocky9, clean
+rebuild, 2026-09-09. Full log: /root/moonray-blender/logs/phase03-build/render-check.log
+(WSL-native). Output artifact was NOT committed to git (see README.md); its checksum is
+recorded here for integrity tracking.
+
+Command:
+  moonray -in /root/moonray-blender/src/openmoonray/testdata/rectangle.rdla \
+          -out /root/moonray-blender/logs/phase03-rectangle.exr
+
+Scene: upstream's own canonical minimal test scene (testdata/rectangle.rdla, unmodified,
+at the pinned openmoonray commit). Uses PerspectiveCamera, RdlMeshGeometry, EnvLight and
+DwaBaseMaterial -- DwaBaseMaterial is provided by moonshine, which is why moonshine is a
+required build component for this exact test, not merely an optional Phase 07 concern
+as the pre-build audit had assumed.
+
+stdout:
+  Loading Scene File(s): /root/moonray-blender/src/openmoonray/testdata/rectangle.rdla
+  Starting render prep...Render prep time = 00:00:00.157
+  00:00:04  758.2 MB | ---------- Time ------------------------------------------
+  00:00:04  758.2 MB | Render time                      = 00:00:04.067000
+  00:00:04  758.2 MB | Total time                       = 00:00:04.302000
+  Wrote /root/moonray-blender/logs/phase03-rectangle.exr
+
+moonray exit code: 0
+
+Output file:
+  -rw-r--r-- 1 root root 345406 Sep  9 15:39 /root/moonray-blender/logs/phase03-rectangle.exr
+  `file`: OpenEXR image data, version 2, storage: scanline, compression: zip,
+          dataWindow: (0 0)-(511 511), displayWindow: (0 0)-(511 511), lineOrder: increasing y
+  sha256: c89ae49192adf77de10e0aabb418f5abf295bbce4d18119dee9789e0bfda897 [1]
+
+exrheader (channel/metadata inspection, per Step 9's requirement to inspect more than
+file existence):
+  channels: A, B, G, R -- all 32-bit float
+  dataWindow / displayWindow: (0 0)-(511 511)  -- matches SceneVariables image_width/
+    height = 512/512 exactly
+  compression: zip, multi-scanline blocks; type: scanlineimage
+
+iinfo -stats (pixel-content sanity, not just header validity):
+  512 x 512, 4 channel, float openexr
+  Stats Min:     0.000000 0.000000 0.000000 0.000000
+  Stats Max:     1.017832 1.020827 0.039217 1.000000
+  Stats Avg:     0.079276 0.079282 0.005740 0.153305
+  Stats StdDev:  0.263320 0.263326 0.013450 0.359218
+  Stats NanCount / InfCount: 0 0 0 0 (all four channels)
+  Stats FiniteCount: 262144 262144 262144 262144 (= 512*512, every pixel finite)
+  Constant: No   Monochrome: No
+This is not a blank/black/constant image: non-zero mean and standard deviation on R/G/B,
+alpha at 1.0 max/plausible average, zero NaN/Inf across all 262144 pixels of every
+channel -- consistent with the expected scene content (a red/green-gradient triangle
+pair on a grey environment-lit background, per rectangle.rdla's own UserData/EnvLight
+definitions).
+
+Reproducibility: this exact render was run twice from independently-invoked fresh WSL
+shells against the clean-rebuilt binary (moonray -help && render, in a script that sets
+its own PATH/RDL2_DSO_PATH/REZ_MOONRAY_ROOT from scratch, assuming nothing from a prior
+shell). Both runs exited 0, produced a valid EXR of the same dimensions, and produced
+IDENTICAL iinfo pixel statistics (min/max/avg/stddev to 6 decimal places) -- exact file
+bytes differ only in the embedded capDate timestamp string, as expected. A third,
+separately-timestamped render against the earlier (stale-cache) binary also produced
+these same identical pixel statistics, additionally confirming the render result itself
+does not depend on which of the two dependency-build locations was linked.
+
+[1] Also recorded: sha256 of the moonray binary itself for this clean build:
+    72ec8f64f811e6459e7a32e7a467f28491963607f6775149bd72a3a0291fcb2
+    (docs/evidence/phase03/README.md records the full provenance context.)

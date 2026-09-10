@@ -1,0 +1,25 @@
+Phase 03 source pin verification -- observed inside MoonRay-Rocky9, 2026-09-09.
+Re-verified AFTER a clean rebuild (see README.md in this directory for why a clean
+rebuild was necessary). All values below were read directly with `git rev-parse HEAD`
+inside the actual checked-out working tree at /root/moonray-blender/src/openmoonray,
+not copied from configs/moonray-source-lock.json -- this is independent confirmation
+that the checkout matches the audited lock, not a restatement of it.
+
+openmoonray (superproject) HEAD: b9b0ac29135b26e20a51edf9028558bb64df6700
+  matches UPSTREAM_LOCK.json / configs/moonray-source-lock.json -- PASS
+
+cmake_modules            1b1b7af8111b0a8ceaff45f3c47a778b0ca07ec4   PASS
+moonray/scene_rdl2        1229d3eaa1ee41dc1ddefbe781c623edceafbac8   PASS
+moonray/mcrt_denoise      0050e726309a533e7964bd05380430e6b06cce7a   PASS
+moonray/moonray           eef67ae992b5037943a7716cca96ed443c36dcec   PASS
+moonray/moonshine         a3c8667298a23df7d6efed128cb475484de66c8e   PASS
+
+No mismatch found. No submodule other than these 5 (plus the superproject itself) was
+initialized -- hydra/, arras/, moonshine_usd/, moonray_gui/, moonray_dcc_plugins/,
+render_profile_viewer/, materialx_shaders/, rats/ were left uninitialized and were
+never built (see README.md "Why per-repository builds" for why the monolithic
+superproject CMakeLists.txt could not have been used unmodified without dragging
+these in).
+
+This check is also re-run automatically at the start of every
+scripts/linux/phase03_build_moonray.sh execution (fail-fast if any pin differs).

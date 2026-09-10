@@ -1,8 +1,33 @@
 # Phase 03 Build Plan — Native MoonRay Runtime (CPU baseline)
 
-Status: PREPARED, NOT EXECUTED
+Status: EXECUTED 2026-09-09 — see `docs/completions/03-moonray-native-runtime.md` and
+`docs/evidence/phase03/` for the actual result. **Sections 7 and 10 below describe the
+originally prepared plan and were superseded by real execution evidence — see the
+correction note immediately below before following them.**
 
-This is a plan only. No command in this document has been run as part of producing it. See
+## Correction after real execution (2026-09-09)
+
+Inspecting the actual pinned `CMakeLists.txt` files (per this plan's own "Execution
+strategy" mandate) before running the `--preset rocky9-release` configure in section 10
+found that it would either hard-fail or silently drag in Hydra/hdMoonray/Arras/USD:
+`openmoonray`'s top-level `CMakeLists.txt` and `moonray/CMakeLists.txt` call
+`add_subdirectory()` **unconditionally** on `rats`, `arras/*`, `hydra`, `moonray_arras`,
+`moonray_dcc_plugins`, `moonshine_usd` and `render_profile_viewer` — none of which this
+project initializes, and several of which (`hydra` → `hdMoonray`, needs the full Pixar
+USD stack) are explicitly out of scope per ADR-0002.
+
+**What was actually run instead**: each required repository (`scene_rdl2`,
+`mcrt_denoise`, `moonray`, `moonshine`) was configured and built **separately** against
+its own `CMakeLists.txt`, per upstream's own documented alternative
+(`building/general_build.md`, "Building the Repositories Separately") — see
+`scripts/linux/phase03_build_moonray.sh`, `scripts/linux/phase03_build_deps.sh` and
+`scripts/linux/phase03_install_packages.sh` for what was actually executed, and
+`docs/evidence/phase03/README.md` for the full rationale. This is a build-*approach*
+correction only — the pinned source commits in section 3 below are exactly what was
+built; no source pin changed.
+
+This is a plan only for sections other than 7/10 (superseded, see above). No command in
+this document was run as part of *producing* it originally. See
 `docs/research/03-upstream-pin-audit.md` for the pin reconciliation this plan builds on and
 for build risks pulled from real upstream build files.
 
@@ -127,5 +152,7 @@ re-run for a source-only rebuild). Re-cloning (`step 1`) is only needed if the p
 itself is being changed, which requires re-running the Phase 03 pin audit first.
 
 ## Explicitly out of scope for this plan
-No step above has been executed. Executing this plan is Phase 03's actual build attempt and
-requires separate explicit user approval, per project protocol.
+Superseded: this plan (specifically sections 7 and 10) has been executed, with the
+approach correction described at the top of this document. See
+`docs/completions/03-moonray-native-runtime.md` and `docs/evidence/phase03/` for what
+was actually run and observed.
