@@ -1,0 +1,42 @@
+Phase 04 -- moonray_bridge smoke test run (observed 2026-09-10, MoonRay-Rocky9 WSL2)
+Test harness: bridge/tests/run_phase04_tests.py (against the built binary,
+scripts/linux/phase04_build_bridge.sh output, sha256
+ba728a976935b969d6df6349a16881aa19048339cb0a349fcf7ac5143bc12638).
+Full command: `python3 -u bridge/tests/run_phase04_tests.py` inside
+MoonRay-Rocky9, RDL2_DSO_PATH=/root/moonray-blender/install/openmoonray/rdl2dso.
+This is the raw, complete stdout of that run -- every line below was produced
+by the real bridge binary and the real MoonRay CPU runtime; nothing here is
+simulated or hand-edited except this header.
+
+[PASS] handshake: matching protocol_version accepted -- {"id": "c1", "payload": {"bridge_info": "moonray_bridge/phase04"}, "protocol_version": 1, "type": "HELLO"}
+[PASS] capabilities: returns feature list -- {"id": "c2", "payload": {"features": ["render.batch", "framebuffer.shm.rgba_f32"]}, "protocol_version": 1, "type": "CAPABILITIES"}
+[PASS] handshake: version mismatch -> ERROR category 5 -- {"id": "v1", "payload": {"category": 5, "code": "VERSION_MISMATCH", "message": "bridge speaks protocol_version 1, client sent 999"}, "protocol_version": 1, "type": "ERROR"}
+[PASS] handshake: connection closed after version mismatch -- b''
+[PASS] CREATE_SCENE: accepted known-good rdla -- {"id": "c2", "payload": {"init_messages": "Loading Scene File: /root/moonray-blender/src/openmoonray/testdata/rectangle.rdla\nRead disk I/O = 134.7 KB\nCurrent date and time: Thu Sep 10 12:50:25 2026\n\n", "ok": true, "rdla_path": "/root/moonray-blender/src/openmoonray/testdata/rectangle.rdla"}, "protocol_version": 1, "type": "CREATE_SCENE"}
+[PASS] START_RENDER: RENDER_COMPLETE with expected dimensions -- {"byte_size": 4194304, "cancelled": false, "channels": 4, "dtype": "float32", "height": 512, "render_ms": 4283, "shm_name": "/moonray_bridge_fb_250_0", "total_ms": 4292, "width": 512}
+[PASS] framebuffer: non-constant pixel content, no NaN/Inf in min/max -- min=0.0 max=1.0208265781402588
+[PASS] framebuffer: read directly from shared memory (not a re-opened export file) -- /moonray_bridge_fb_250_0
+[INFO] latency: CREATE_SCENE+START_RENDER round trip = 5466 ms (client-observed, unoptimized)
+[INFO] memory: bridge process RSS after render = 778228 kB (unoptimized, single small scene)
+[PASS] malformed: invalid JSON -> ERROR category 1, connection stays open -- {"id": "", "payload": {"category": 1, "code": "INVALID_JSON", "message": "message body is not valid JSON: * Line 1, Column 2\n  Missing '}' or object member name\n"}, "protocol_version": 1, "type": "ERROR"}
+[PASS] malformed: unknown type -> ERROR (hard error, not silently ignored) -- {"id": "", "payload": {"category": 1, "code": "UNKNOWN_MESSAGE_TYPE", "message": "unrecognized message type: NOT_A_REAL_TYPE"}, "protocol_version": 1, "type": "ERROR"}
+[PASS] malformed: nonexistent rdla_path -> ERROR category 1 -- [category 1] SESSION_VALIDATION_ERROR: rdla_path does not exist or is not accessible: /nonexistent/path/does-not-exist.rdla
+[PASS] malformed: connection still usable after errors -- {"id": "c3", "payload": {"features": ["render.batch", "framebuffer.shm.rgba_f32"]}, "protocol_version": 1, "type": "CAPABILITIES"}
+[PASS] crash: client observes a clean connection failure, not a hang/exception storm
+[PASS] restart: fresh bridge process after a crash handles a new session normally -- {"id": "c1", "payload": {"bridge_info": "moonray_bridge/phase04"}, "protocol_version": 1, "type": "HELLO"}
+
+PHASE04_TESTS_OK -- 14 checks passed
+TESTS_EXIT_CODE=0
+
+=== Interpretation against docs/phases/04-direct-bridge-prototype.md acceptance criteria ===
+- "Client can start bridge and verify version"            -> handshake checks 1-4
+- "Bridge renders a known minimal scene through direct
+   MoonRay API"                                            -> CREATE_SCENE + START_RENDER checks
+- "Client receives correct image/result without reading a
+   manually exported final file as its only transport"     -> framebuffer read directly from
+                                                                POSIX shared memory (/dev/shm),
+                                                                never via a re-opened export file
+- "Malformed input fails cleanly"                           -> malformed-input checks (4), and the
+                                                                connection remains usable afterward
+- "Bridge process crash/restart does not corrupt client
+   process"                                                 -> crash + restart checks

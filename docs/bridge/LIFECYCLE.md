@@ -84,7 +84,7 @@ later renders").
 | Scene updates classified → validated → mapped → applied → rendered → snapshotted | **Decided shape** (ARCHITECTURE.md) |
 | RDL2 `beginUpdate()`/`endUpdate()` bracketing for attribute writes | **Decided** (RDL2 API) |
 | Version handshake sequence (`HELLO`/`CAPABILITIES`, version-mismatch rejection) | **Decided (shape) — [MESSAGE_SCHEMA.md](MESSAGE_SCHEMA.md)** |
-| Version handshake wire encoding | **Open — Phase 04** |
+| Version handshake wire encoding | **Decided — Phase 04**: JSON `HELLO` envelope over the length-prefixed UDS framing; see `docs/evidence/phase04/`. |
 | Per-attribute "requires render pause" classification | **Open — Phase 06/07** |
 | Viewport snapshot cadence / render-mode transition messages | **Open — Phase 08** |
 | Auto-restart/backoff policy after crash | **Open — Phase 11** |

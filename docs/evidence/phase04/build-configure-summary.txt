@@ -1,0 +1,66 @@
+Phase 04 -- moonray_bridge build evidence (observed 2026-09-10, MoonRay-Rocky9 WSL2)
+Build script: scripts/linux/phase04_build_bridge.sh
+Source: bridge/ (this repo) ; build dir: /root/moonray-blender/build/bridge04 (Linux-native, disposable)
+
+=== configure.log (head) ===
+-- The CXX compiler identification is GNU 11.5.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Boost: /usr/lib64/cmake/Boost-1.75.0/BoostConfig.cmake (found version "1.75.0") found components: filesystem program_options regex thread
+-- Found Lua: /usr/lib64/liblua-5.4.so;/usr/lib64/libm.so (found version "5.4.4")
+-- Found CppUnit: /lib64/libcppunit.so
+-- Found OpenSSL: /usr/lib64/libcrypto.so (found version "3.5.5")
+-- Found JsonCpp: /opt/MoonRay/installs/lib64/libjsoncpp.so
+-- Found Log4cplus: /lib64/liblog4cplus.so
+-- Looking for TBB components tbb; (tbbmalloc;tbbmalloc_proxy;tbbbind;tbbpreview)
+-- Found TBB version 2020.3 at /opt/MoonRay/installs
+-- Found BISON: /usr/bin/bison (found version "3.7.4")
+-- Found FLEX: /usr/bin/flex (found version "2.6.4")
+-- Found Boost: /usr/lib64/cmake/Boost-1.75.0/BoostConfig.cmake (found version "1.75.0")
+-- Found Libatomic: /lib64/libatomic.so.1
+-- Found ZLIB: /usr/lib64/libz.so (found version "1.2.11")
+-- Found JPEG: /usr/lib64/libjpeg.so (found version "62")
+-- Found Threads: TRUE
+-- Found OpenVDB: /lib64/libopenvdb.so
+-- Found OpenSubDiv: /opt/MoonRay/installs/lib/libosdCPU.so;/opt/MoonRay/installs/lib/libosdGPU.so
+-- Found Random123: /opt/MoonRay/installs/include/Random123/..
+-- Configuring done (31.9s)
+-- Generating done (0.3s)
+-- Build files have been written to: /root/moonray-blender/build/bridge04
+
+NOTE: `find_package(SceneRdl2 REQUIRED)` transitively resolves JsonCpp via
+SceneRdl2Config.cmake's own find_dependency() call -- JsonCpp is already a
+built third-party dependency of the pinned Phase 03 MoonRay stack
+(/opt/MoonRay/installs/lib64/libjsoncpp.so), not a new dependency added for
+this bridge. This is why JsonCpp was selected as the control-plane wire
+encoding library instead of vendoring a new one (Phase 04 negative
+constraint: "do not choose a complex serialization framework solely by
+preference; justify with requirements").
+
+=== build.log summary ===
+[ 16%] Building CXX object CMakeFiles/moonray_bridge.dir/src/main.cpp.o
+[ 33%] Building CXX object CMakeFiles/moonray_bridge.dir/src/Protocol.cpp.o
+[ 50%] Building CXX object CMakeFiles/moonray_bridge.dir/src/PosixSocketServer.cpp.o
+[ 66%] Building CXX object CMakeFiles/moonray_bridge.dir/src/RenderSession.cpp.o
+[ 83%] Building CXX object CMakeFiles/moonray_bridge.dir/src/SharedMemoryBuffer.cpp.o
+[100%] Linking CXX executable moonray_bridge
+[100%] Built target moonray_bridge
+warning count: 0
+error count: 0
+
+Before target_compile_options(moonray_bridge PRIVATE -march=core-avx2 -mavx)
+was added to bridge/CMakeLists.txt (per the critical finding carried over from
+the Phase 04 kickoff brief), the same source failed to compile with:
+    avxintrin.h:1486:19: error: '__builtin_ia32_ps256_ps' was not declared in this scope
+    avxintrin.h:1492:20: error: '__builtin_ia32_si256_si' was not declared in this scope
+confirming MoonRay's exported CMake targets do not propagate the ISA compile
+flags the MoonRay build itself requires (cmake_modules/cmake/MoonrayDso.cmake).
+With the explicit flags, zero warnings/errors.
+
+=== binary ===
+-rwxr-xr-x 1 root root 92352 Sep 10 12:48 /root/moonray-blender/build/bridge04/moonray_bridge
+sha256  ba728a976935b969d6df6349a16881aa19048339cb0a349fcf7ac5143bc12638  moonray_bridge
+ldd: all libraries resolved (no "not found" lines)

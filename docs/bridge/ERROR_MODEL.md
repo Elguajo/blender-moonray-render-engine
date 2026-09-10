@@ -60,7 +60,7 @@ error-reporting channel for the bridge. Exact log location/format/rotation is Ph
 ## Open — resolved by evidence in later phases
 | Question | Target phase |
 |---|---|
-| Exact `ERROR.code` taxonomy (machine-readable codes per category; `ERROR` message shape decided in [MESSAGE_SCHEMA.md](MESSAGE_SCHEMA.md)) | Phase 04 |
+| Exact `ERROR.code` taxonomy | **Partially decided — Phase 04** established the first codes actually needed by the prototype (`INVALID_JSON`, `INVALID_ENVELOPE`, `MISSING_PROTOCOL_VERSION`/`MISSING_TYPE`/`MISSING_ID`/`INVALID_PAYLOAD`, `UNKNOWN_MESSAGE_TYPE`, `HANDSHAKE_REQUIRED`, `VERSION_MISMATCH`, `SESSION_VALIDATION_ERROR`, `UNSUPPORTED_FEATURE`, `NOT_IMPLEMENTED_PHASE04`, `NATIVE_RENDER_ERROR`; see `bridge/src/Protocol.h`/`main.cpp`). The set is not exhaustive and grows per phase (Phase 06/07 add scene/material-specific codes). |
 | How validation errors are attributed to a specific Blender object/datablock in the UI | Phase 06/07 |
 | Auto-restart vs. manual-retry default policy | Phase 11 |
 | Structured log format/location/rotation | Phase 11 |

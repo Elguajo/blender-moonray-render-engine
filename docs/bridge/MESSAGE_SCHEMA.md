@@ -156,8 +156,8 @@ technology is chosen.
 | `CAPABILITIES` separate from `HELLO`, additive, no version bump per flag | **Decided (this document)** |
 | Unknown field inside a known message → ignored; unknown message `type` → hard `ERROR` | **Decided (this document)** |
 | `UPDATE_OBJECT`/`UPDATE_CAMERA`/`UPDATE_MATERIAL` as distinct types | **Decided (this document)** |
-| `FRAME_UPDATE`/bulk payloads carry a reference, never inline arrays | **Decided (this document)**, reference format **Open — Phase 04** |
-| Wire encoding (JSON now vs. FlatBuffers/Cap'n Proto/shared memory later) | **Open — Phase 04**, unaffected by this document by design |
+| `FRAME_UPDATE`/bulk payloads carry a reference, never inline arrays | **Decided (this document)**; reference format **Decided — Phase 04**: a POSIX shared-memory segment name (string) plus width/height/channels/dtype/byte_size — see `docs/bridge/FRAMEBUFFER_PROTOCOL.md`. |
+| Wire encoding | **Decided — Phase 04**: JSON (via JsonCpp) over a 4-byte little-endian length-prefixed frame. See `docs/evidence/phase04/`. |
 | Exact per-message payload field layout (mesh, camera, material attributes) | **Open — Phase 04/06/07**, owned by [SCENE_TRANSLATION.md](SCENE_TRANSLATION.md) |
 | `CAPABILITIES` flag vocabulary | **Open**, grows per phase |
 | `protocol_version` range/negotiation across independently-upgraded binaries | **Open**, not before Phase 11 |

@@ -51,8 +51,10 @@ built and a standalone CPU render was verified. See `docs/completions/03-moonray
 and `docs/evidence/phase03/`. Its evidence was independently re-audited on 2026-09-10; four
 documentation/tooling defects were corrected (commit `6a75ccd`), no build or render result changed.
 
-Phase 04 (Direct MoonRay Bridge prototype and IPC contract) is the active `[>]` phase, approved by
-the user on 2026-09-10. Downstream build prerequisites were verified by actually building, linking
-and running a CMake consumer against the installed runtime; note the mandatory
-`-march=core-avx2 -mavx` compile flags recorded in `docs/project/NEXT_SESSION.md` -- without them no
-translation unit including MoonRay headers will compile.
+Phase 04 (Direct MoonRay Bridge prototype and IPC contract) is COMPLETE (2026-09-10): a
+minimal native `moonray_bridge` process was built and proven to render a known scene
+through the direct MoonRay API, deliver the framebuffer via POSIX shared memory, reject a
+version mismatch and malformed input cleanly, and survive a hard crash/restart without
+corrupting the client. See `docs/completions/04-direct-bridge-prototype.md`,
+`docs/evidence/phase04/` and `docs/decisions/ADR-0004-bridge-ipc-transport-and-wire-format.md`.
+No phase is currently `[>]`. Phase 05 requires explicit user approval before it may begin.
