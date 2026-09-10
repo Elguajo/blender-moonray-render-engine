@@ -1,0 +1,18 @@
+Error: MoonRay: bridge failed to start: moonray_bridge binary not found or not executable: '/nonexistent/moonray_bridge' (build it with scripts/linux/phase04_build_bridge.sh, or set the add-on's Bridge Binary path in Render Properties)
+Error: moonray_bridge binary not found or not executable: '/nonexistent/moonray_bridge' (build it with scripts/linux/phase04_build_bridge.sh, or set the add-on's Bridge Binary path in Render Properties)
+[bad_bridge_binary] render.render() reported a clean RuntimeError (expected): Error: MoonRay: bridge failed to start: moonray_bridge binary not found or not executable: '/nonexistent/moonray_bridge' (build it with scripts/linux/phase04_build_bridge.sh, or set the add-on's Bridge Binary path in Render Properties)
+Error: moonray_bridge binary not found or not executable: '/nonexistent/moonray_bridge' (build it with scripts/linux/phase04_build_bridge.sh, or set the add-on's Bridge Binary path in Render Properties)
+
+[bad_bridge_binary] Render Result present: True
+[bad_bridge_binary] Blender still responsive after failure (added a probe sphere)
+Error: MoonRay: scene not supported: Phase 05 supports exactly one mesh object in the scene (found 2); general multi-object geometry translation is Phase 06 scope
+Error: Phase 05 supports exactly one mesh object in the scene (found 2); general multi-object geometry translation is Phase 06 scope
+[unsupported_scene_two_meshes] render.render() reported a clean RuntimeError (expected): Error: MoonRay: scene not supported: Phase 05 supports exactly one mesh object in the scene (found 2); general multi-object geometry translation is Phase 06 scope
+Error: Phase 05 supports exactly one mesh object in the scene (found 2); general multi-object geometry translation is Phase 06 scope
+
+[unsupported_scene_two_meshes] Render Result present: True
+[unsupported_scene_two_meshes] Blender still responsive after failure (added a probe sphere)
+ERROR_PATHS_OK
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:12:34)
+
+Blender quit

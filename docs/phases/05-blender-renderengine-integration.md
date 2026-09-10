@@ -1,6 +1,6 @@
 # Phase 05 — Blender RenderEngine integration and first F12 frame
 
-Status: PLANNED
+Status: COMPLETE
 
 ## Goal
 Register MoonRay as a Blender render engine and complete the first end-to-end F12 render through the Direct Bridge into Blender Render Result.
@@ -23,19 +23,19 @@ Register MoonRay as a Blender render engine and complete the first end-to-end F1
 - Animation/AOV production parity.
 
 ## Tasks
-- [ ] Verify Blender 5.2 RenderEngine API from official source/docs.
-- [ ] Implement engine registration and settings panel.
-- [ ] Translate baseline camera + primitive + light.
-- [ ] Invoke bridge render.
-- [ ] Copy result into Blender Render Result efficiently.
-- [ ] Test cancel and bridge failure.
+- [x] Verify Blender 5.2 RenderEngine API from official source/docs.
+- [x] Implement engine registration and settings panel.
+- [x] Translate baseline camera + primitive + light.
+- [x] Invoke bridge render.
+- [x] Copy result into Blender Render Result efficiently.
+- [x] Test cancel and bridge failure.
 
 ## Acceptance criteria
-- [ ] `MoonRay` is selectable in Render Engine menu.
-- [ ] Baseline .blend renders with F12 via MoonRay.
-- [ ] Render result appears inside Blender without manual external render step.
-- [ ] Cancel does not leave zombie bridge/render.
-- [ ] Bridge failure is reported without taking Blender down.
+- [x] `MoonRay` is selectable in Render Engine menu.
+- [x] Baseline .blend renders with F12 via MoonRay.
+- [x] Render result appears inside Blender without manual external render step.
+- [x] Cancel does not leave zombie bridge/render.
+- [x] Bridge failure is reported without taking Blender down.
 
 ## Verification
 - Blender automated/background smoke where possible.
@@ -43,6 +43,5 @@ Register MoonRay as a Blender render engine and complete the first end-to-end F1
 - Logs proving MoonRay backend.
 
 ## Completion Record
-Status: NOT STARTED
-
-When complete, write `docs/completions/05-blender-renderengine-integration.md`, update Roadmap/NEXT_SESSION, then STOP for user approval.
+Status: COMPLETE (2026-09-10). See `docs/completions/05-blender-renderengine-integration.md`
+and `docs/evidence/phase05/`.

@@ -57,4 +57,13 @@ through the direct MoonRay API, deliver the framebuffer via POSIX shared memory,
 version mismatch and malformed input cleanly, and survive a hard crash/restart without
 corrupting the client. See `docs/completions/04-direct-bridge-prototype.md`,
 `docs/evidence/phase04/` and `docs/decisions/ADR-0004-bridge-ipc-transport-and-wire-format.md`.
-No phase is currently `[>]`. Phase 05 requires explicit user approval before it may begin.
+
+Phase 05 (Blender RenderEngine integration and first F12 frame) is COMPLETE (2026-09-10): the
+`addon/` package registers MoonRay as a Blender Render Engine, launches/version-checks the
+Phase 04 bridge, translates a minimal baseline scene, and renders it via a real `F12` keypress
+in the actual Blender GUI (WSLg), verified by screenshot. A real MoonRay-side lighting anomaly
+(SphereLight and non-axis-aligned DistantLight both fail to illuminate module-authored geometry
+in this build) was found, investigated, and worked around with an axis-snapped DistantLight
+approximation — not root-caused, flagged for later phases. See
+`docs/completions/05-blender-renderengine-integration.md` and `docs/evidence/phase05/`.
+No phase is currently `[>]`. Phase 06 requires explicit user approval before it may begin.
